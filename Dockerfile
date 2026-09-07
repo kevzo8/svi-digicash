@@ -27,7 +27,6 @@ RUN addgroup -g 1001 -S nodejs && \
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/docs ./docs
 COPY --from=builder /app/package.json ./package.json
 
 # Copy config.env file (or use env vars at runtime)

@@ -1,6 +1,7 @@
 services:
   digicash:
     image: svi-digicash
+    pull_policy: build
     build:
       context: .
       dockerfile: Dockerfile
