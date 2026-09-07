@@ -32,20 +32,17 @@ const hmac = (s) => crypto.createHmac('sha256', SECRET).update(s).digest('hex');
 const dash = (v) => (v === null || v === undefined || v === '') ? '-' : String(v);
 const uid = (p) => `${p}${Date.now()}${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
-// Each variant: [name, orderedValuesFn(ids), payloadKeyOrder]
-function variants(opId, payId) {
-  const V = { service_id: SERVICE_ID, passwork: PASSWORK, amount: AMOUNT, currency: CURRENCY, operation_id: opId, payment_id: payId, by_method: BY_METHOD, callback_url: CALLBACK, return_url: RETURN };
-  const order = (keys) => keys.map((k) => dash(V[k])).join('');
-  return [
-    ['V1_postman_service_first', order(['service_id', 'passwork', 'amount', 'currency', 'operation_id', 'payment_id', 'by_method', 'callback_url', 'return_url'])],
-    ['V2_docs_passwork_first', order(['passwork', 'service_id', 'amount', 'currency', 'operation_id', 'payment_id', 'by_method', 'callback_url', 'return_url'])],
-    ['V3_alphabetical', order(['amount', 'by_method', 'callback_url', 'currency', 'operation_id', 'passwork', 'payment_id', 'return_url', 'service_id'])],
-    ['V4_V1_same_ids', null], // built below with opId === payId
-    ['V5_V2_same_ids', null],
-    ['V6_V1_no_bymethod', order(['service_id', 'passwork', 'amount', 'currency', 'operation_id', 'payment_id', 'callback_url', 'return_url'])],
-    ['V7_V2_no_bymethod', order(['passwork', 'service_id', 'amount', 'currency', 'operation_id', 'payment_id', 'callback_url', 'return_url'])],
-  ];
-}
+// Signature input orders to try (raw concatenated strings are built per
+// variant in the main loop below).
+const VARIANT_NAMES = [
+  'V1_postman_service_first',
+  'V2_docs_passwork_first',
+  'V3_alphabetical',
+  'V4_V1_same_ids',
+  'V5_V2_same_ids',
+  'V6_V1_no_bymethod',
+  'V7_V2_no_bymethod',
+];
 
 function post(body) {
   return new Promise((resolve, reject) => {
@@ -71,7 +68,7 @@ function post(body) {
 
 (async () => {
   console.log('Base:', BASE, '| service:', SERVICE_ID);
-  for (const [name] of variants('x', 'x')) {
+  for (const name of VARIANT_NAMES) {
     const opId = uid('PROBE');
     const payId = name.includes('same_ids') ? opId : uid('PROBE');
     const V = { service_id: SERVICE_ID, passwork: PASSWORK, amount: AMOUNT, currency: CURRENCY, operation_id: opId, payment_id: payId, by_method: BY_METHOD, callback_url: CALLBACK, return_url: RETURN };

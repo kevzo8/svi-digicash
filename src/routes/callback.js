@@ -5,7 +5,9 @@ const { validateCallback } = require('../utils/signature');
 const router = express.Router();
 
 // In-memory storage for callback logs (replace with database in production)
+// Capped to avoid unbounded memory growth.
 const callbackLogs = [];
+const MAX_CALLBACK_LOGS = 200;
 
 /**
  * DigiCash Callback Endpoint
@@ -38,7 +40,7 @@ const callbackLogs = [];
  *   "signature": "string"
  * }
  */
-router.post('/callback', express.json({ limit: '1mb' }), (req, res) => {
+router.post('/callback', (req, res) => {
   const timestamp = new Date().toISOString();
   const payload = req.body;
   
@@ -59,6 +61,9 @@ router.post('/callback', express.json({ limit: '1mb' }), (req, res) => {
   };
   
   callbackLogs.push(logEntry);
+  if (callbackLogs.length > MAX_CALLBACK_LOGS) {
+    callbackLogs.splice(0, callbackLogs.length - MAX_CALLBACK_LOGS);
+  }
   
   if (!validation.valid) {
     console.error('❌ Signature validation FAILED:', validation.error);
@@ -156,6 +161,7 @@ router.get('/config', (req, res) => {
     supportedPaymentMethods: config.paymentMethods.pay,
     supportedPayoutMethods: config.paymentMethods.payout,
     supportedBanksCount: Object.keys(config.bankMappings).length,
+    supportedBanks: config.bankMappings,
     credentials: {
       serviceIdLength: (config.digicash.serviceId || '').length,
       passworkLength: (config.digicash.passwork || '').length,

@@ -17,7 +17,7 @@
           <span class="logo-text">SVI DigiCash</span>
         </div>
         <div class="header-actions">
-          <span class="env-badge uat">UAT Environment</span>
+          <span class="env-badge prod">Production</span>
         </div>
       </div>
     </header>
@@ -34,6 +34,7 @@
     <main class="main">
       <!-- Pay In Tab -->
       <section id="tab-pay" class="tab-content active">
+        <div class="workspace">
         <div class="card">
           <div class="card-header">
             <h2>Create Payment</h2>
@@ -80,7 +81,13 @@
               <span class="btn-loader hidden"></span>
             </button>
           </form>
-
+        </div>
+        <aside class="side-panel">
+          <div class="side-placeholder" id="pay-side-placeholder">
+            <div class="side-placeholder-icon">📄</div>
+            <p><strong>No response yet</strong></p>
+            <p class="form-hint">Submit the form and the API response will appear here.</p>
+          </div>
           <!-- Payment Result -->
           <div id="pay-result" class="result hidden">
             <div class="result-header">
@@ -113,19 +120,23 @@
               </a>
               <p class="form-hint">Click the button above or share the redirect URL with your customer</p>
             </div>
-            <details class="result-details">
-              <summary>View Raw Response</summary>
-              <pre id="pay-raw-response" class="json-viewer"></pre>
-            </details>
           </div>
 
           <!-- Error Display -->
           <div id="pay-error" class="error hidden"></div>
+        </aside>
+        <aside class="raw-panel">
+          <div class="card raw-card">
+            <div class="card-header"><h3>Raw Response</h3></div>
+            <pre id="pay-raw-response" class="json-viewer">// Submit the form to see the raw response…</pre>
+          </div>
+        </aside>
         </div>
       </section>
 
       <!-- Pay Out Tab -->
       <section id="tab-payout" class="tab-content">
+        <div class="workspace">
         <div class="card">
           <div class="card-header">
             <h2>Create Payout (Instapay)</h2>
@@ -197,7 +208,13 @@
               <span class="btn-loader hidden"></span>
             </button>
           </form>
-
+        </div>
+        <aside class="side-panel">
+          <div class="side-placeholder" id="payout-side-placeholder">
+            <div class="side-placeholder-icon">📄</div>
+            <p><strong>No response yet</strong></p>
+            <p class="form-hint">Submit the form and the API response will appear here.</p>
+          </div>
           <!-- Payout Result -->
           <div id="payout-result" class="result hidden">
             <div class="result-header">
@@ -224,18 +241,22 @@
                 <span class="result-value" id="res-po-signature">-</span>
               </div>
             </div>
-            <details class="result-details">
-              <summary>View Raw Response</summary>
-              <pre id="payout-raw-response" class="json-viewer"></pre>
-            </details>
           </div>
 
           <div id="payout-error" class="error hidden"></div>
+        </aside>
+        <aside class="raw-panel">
+          <div class="card raw-card">
+            <div class="card-header"><h3>Raw Response</h3></div>
+            <pre id="payout-raw-response" class="json-viewer">// Submit the form to see the raw response…</pre>
+          </div>
+        </aside>
         </div>
       </section>
 
       <!-- Status Tab -->
       <section id="tab-status" class="tab-content">
+        <div class="workspace">
         <div class="card">
           <div class="card-header">
             <h2>Check Transaction Status</h2>
@@ -253,7 +274,13 @@
               <span class="btn-loader hidden"></span>
             </button>
           </form>
-
+        </div>
+        <aside class="side-panel">
+          <div class="side-placeholder" id="status-side-placeholder">
+            <div class="side-placeholder-icon">📄</div>
+            <p><strong>No response yet</strong></p>
+            <p class="form-hint">Submit the form and the API response will appear here.</p>
+          </div>
           <div id="status-result" class="result hidden">
             <div class="result-header">
               <h3>Transaction Status</h3>
@@ -286,13 +313,16 @@
                 <span class="result-value" id="res-st-timestamp">-</span>
               </div>
             </div>
-            <details class="result-details">
-              <summary>View Raw Response</summary>
-              <pre id="status-raw-response" class="json-viewer"></pre>
-            </details>
           </div>
 
           <div id="status-error" class="error hidden"></div>
+        </aside>
+        <aside class="raw-panel">
+          <div class="card raw-card">
+            <div class="card-header"><h3>Raw Response</h3></div>
+            <pre id="status-raw-response" class="json-viewer">// Submit the form to see the raw response…</pre>
+          </div>
+        </aside>
         </div>
       </section>
 

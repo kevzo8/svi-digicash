@@ -29,8 +29,9 @@ COPY --from=builder /app/src ./src
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-# Copy config.env file (or use env vars at runtime)
-COPY config.env config.env
+# NOTE: config.env is NOT copied on purpose (it's gitignored and may not
+# exist on fresh clones). Runtime config comes from docker-compose
+# env_file/environment. For plain `docker run`, pass -e flags instead.
 
 # Change ownership
 RUN chown -R nextjs:nodejs /app

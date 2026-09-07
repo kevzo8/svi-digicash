@@ -376,10 +376,38 @@ function setLoading(btn, textEl, loaderEl, loading) {
 
 function showResult(id) {
   document.getElementById(id).classList.remove('hidden');
+  updateSidePanel(id);
 }
 
 function hideResult(id) {
   document.getElementById(id).classList.add('hidden');
+  updateSidePanel(id);
+}
+
+// Show the "No response yet" placeholder only when both the
+// result and error panels for that tab are hidden.
+// Also resets the raw-response column to its waiting state.
+const RAW_PANEL_IDS = {
+  pay: 'pay-raw-response',
+  payout: 'payout-raw-response',
+  status: 'status-raw-response'
+};
+const RAW_WAITING_TEXT = '// Submit the form to see the raw response…';
+
+function updateSidePanel(id) {
+  const tab = id.split('-')[0]; // pay | payout | status
+  const placeholder = document.getElementById(`${tab}-side-placeholder`);
+  if (!placeholder) return;
+  const result = document.getElementById(`${tab}-result`);
+  const error = document.getElementById(`${tab}-error`);
+  const anyVisible =
+    (result && !result.classList.contains('hidden')) ||
+    (error && !error.classList.contains('hidden'));
+  placeholder.classList.toggle('hidden', anyVisible);
+  if (!anyVisible) {
+    const rawEl = document.getElementById(RAW_PANEL_IDS[tab]);
+    if (rawEl) rawEl.textContent = RAW_WAITING_TEXT;
+  }
 }
 
 function showError(id, message, details) {
@@ -387,13 +415,18 @@ function showError(id, message, details) {
   let html = `<div class="error-title">Error</div><div class="error-details">${escapeHtml(message)}</div>`;
   if (details && typeof details === 'object') {
     html += `<details class="error-raw"><summary>View full error body</summary><pre>${escapeHtml(JSON.stringify(details, null, 2))}</pre></details>`;
+    // Also mirror into the always-visible raw column
+    const rawEl = document.getElementById(id.replace('-error', '-raw-response'));
+    if (rawEl) rawEl.textContent = JSON.stringify(details, null, 2);
   }
   el.innerHTML = html;
   el.classList.remove('hidden');
+  updateSidePanel(id);
 }
 
 function hideError(id) {
   document.getElementById(id).classList.add('hidden');
+  updateSidePanel(id);
 }
 
 function escapeHtml(text) {
