@@ -1,0 +1,29 @@
+{
+  "name": "svi-digicash",
+  "version": "1.0.0",
+  "description": "SVI DigiCash - DigiCash/IOT ACH Payment API Integration",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "node tests/run-tests.js",
+    "test:pay": "node tests/test-pay.js",
+    "test:payout": "node tests/test-payout.js",
+    "test:status": "node tests/test-status.js",
+    "test:callback": "node tests/test-callback.js",
+    "test:signature": "node tests/test-signature.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

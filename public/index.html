@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVI DigiCash - Payment Portal</title>
+  <link rel="icon" href="/DigiCash.png" type="image/png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <img src="/DigiCash.png" alt="DigiCash" class="logo-img">
+          <span class="logo-text">SVI DigiCash</span>
+        </div>
+        <div class="header-actions">
+          <span class="env-badge uat">UAT Environment</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <button class="nav-btn active" data-tab="pay">Pay In</button>
+      <button class="nav-btn" data-tab="payout">Pay Out</button>
+      <button class="nav-btn" data-tab="status">Check Status</button>
+      <button class="nav-btn" data-tab="callbacks">Callbacks</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Pay In Tab -->
+      <section id="tab-pay" class="tab-content active">
+        <div class="card">
+          <div class="card-header">
+            <h2>Create Payment</h2>
+            <p class="card-subtitle">Initiate a payment via GCash, PalawanPay, or QR Ph</p>
+          </div>
+          
+          <form id="pay-form" class="form">
+            <div class="form-group">
+              <label for="pay-method">Payment Method</label>
+              <select id="pay-method" name="method" required>
+                <option value="gcash">GCash</option>
+                <option value="palawanpay">PalawanPay</option>
+                <option value="qrph">QR Ph (Standard)</option>
+                <option value="qrph-vip">QR Ph VIP</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="pay-amount">Amount (PHP)</label>
+                <input type="number" id="pay-amount" name="amount" step="0.01" min="1" placeholder="100.00" required>
+                <span class="form-hint">Amount in major units (e.g., 100.00 = ₱100)</span>
+              </div>
+              <div class="form-group">
+                <label for="pay-currency">Currency</label>
+                <input type="text" id="pay-currency" name="currency" value="PHP" readonly>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="pay-operation-id">Operation ID (optional)</label>
+              <input type="text" id="pay-operation-id" name="operationId" placeholder="Auto-generated if empty">
+              <span class="form-hint">Unique merchant transaction ID</span>
+            </div>
+
+            <div class="form-group">
+              <label for="pay-payment-id">Payment ID (optional)</label>
+              <input type="text" id="pay-payment-id" name="paymentId" placeholder="Auto-generated if empty">
+              <span class="form-hint">Another unique merchant transaction ID</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="pay-submit">
+              <span class="btn-text">Create Payment</span>
+              <span class="btn-loader hidden"></span>
+            </button>
+          </form>
+
+          <!-- Payment Result -->
+          <div id="pay-result" class="result hidden">
+            <div class="result-header">
+              <h3>Payment Created Successfully</h3>
+              <button class="btn-icon" id="pay-copy-all" title="Copy all details">📋</button>
+            </div>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Request ID</span>
+                <span class="result-value" id="res-request-id">-</span>
+                <button class="btn-copy" data-copy="res-request-id">Copy</button>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Operation ID</span>
+                <span class="result-value" id="res-operation-id">-</span>
+                <button class="btn-copy" data-copy="res-operation-id">Copy</button>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Status</span>
+                <span class="result-value status-badge" id="res-status">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Signature Valid</span>
+                <span class="result-value" id="res-signature">-</span>
+              </div>
+            </div>
+            <div class="result-action">
+              <a id="pay-redirect-link" href="#" target="_blank" class="btn btn-primary btn-full">
+                🔗 Redirect to Payment Page
+              </a>
+              <p class="form-hint">Click the button above or share the redirect URL with your customer</p>
+            </div>
+            <details class="result-details">
+              <summary>View Raw Response</summary>
+              <pre id="pay-raw-response" class="json-viewer"></pre>
+            </details>
+          </div>
+
+          <!-- Error Display -->
+          <div id="pay-error" class="error hidden"></div>
+        </div>
+      </section>
+
+      <!-- Pay Out Tab -->
+      <section id="tab-payout" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h2>Create Payout (Instapay)</h2>
+            <p class="card-subtitle">Disburse funds to bank accounts or e-wallets</p>
+          </div>
+
+          <form id="payout-form" class="form">
+            <div class="form-section">
+              <h3>Transaction Details</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="payout-amount">Amount (PHP)</label>
+                  <input type="number" id="payout-amount" name="amount" step="0.01" min="1" placeholder="500.00" required>
+                </div>
+                <div class="form-group">
+                  <label for="payout-currency">Currency</label>
+                  <input type="text" id="payout-currency" name="currency" value="PHP" readonly>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Customer Information</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="payout-bank-id">Bank / Wallet <span class="required">*</span></label>
+                  <select id="payout-bank-id" name="accountBankId" required>
+                    <option value="">Select bank/wallet...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="payout-account-number">Account Number <span class="required">*</span></label>
+                  <input type="text" id="pout-account-number" name="accountNumber" placeholder="09271528945" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="payout-account-name">Account Name <span class="required">*</span></label>
+                  <input type="text" id="payout-account-name" name="accountName" placeholder="Juan Dela Cruz" required>
+                </div>
+                <div class="form-group">
+                  <label for="payout-email">Email <span class="required">*</span></label>
+                  <input type="email" id="payout-email" name="email" placeholder="juan@gmail.com" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="payout-phone">Phone Number <span class="required">*</span></label>
+                  <input type="tel" id="payout-phone" name="phoneNumber" placeholder="09271528945" required>
+                  <span class="form-hint">Format: 09xxxxxxxxx or +63xxxxxxxxxx</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="payout-address">Address (optional)</label>
+                <input type="text" id="payout-address" name="address" placeholder="Manila, Philippines">
+              </div>
+
+              <div class="form-group">
+                <label for="payout-remark">Remark (optional)</label>
+                <input type="text" id="payout-remark" name="remark" placeholder="Salary disbursement">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="payout-submit">
+              <span class="btn-text">Create Payout</span>
+              <span class="btn-loader hidden"></span>
+            </button>
+          </form>
+
+          <!-- Payout Result -->
+          <div id="payout-result" class="result hidden">
+            <div class="result-header">
+              <h3>Payout Created Successfully</h3>
+              <button class="btn-icon" id="payout-copy-all" title="Copy all details">📋</button>
+            </div>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">External ID</span>
+                <span class="result-value" id="res-ext-id">-</span>
+                <button class="btn-copy" data-copy="res-ext-id">Copy</button>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Operation ID</span>
+                <span class="result-value" id="res-po-operation-id">-</span>
+                <button class="btn-copy" data-copy="res-po-operation-id">Copy</button>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Status</span>
+                <span class="result-value status-badge" id="res-po-status">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Signature Valid</span>
+                <span class="result-value" id="res-po-signature">-</span>
+              </div>
+            </div>
+            <details class="result-details">
+              <summary>View Raw Response</summary>
+              <pre id="payout-raw-response" class="json-viewer"></pre>
+            </details>
+          </div>
+
+          <div id="payout-error" class="error hidden"></div>
+        </div>
+      </section>
+
+      <!-- Status Tab -->
+      <section id="tab-status" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h2>Check Transaction Status</h2>
+            <p class="card-subtitle">Query the status of a payment or payout transaction</p>
+          </div>
+
+          <form id="status-form" class="form">
+            <div class="form-group">
+              <label for="status-request-id">Request ID <span class="required">*</span></label>
+              <input type="text" id="status-request-id" name="requestId" placeholder="01JX4PFRAY0NEM43EJ9NVQVFZ2" required>
+              <span class="form-hint">Request ID returned from Pay/Payout API</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" id="status-submit">
+              <span class="btn-text">Check Status</span>
+              <span class="btn-loader hidden"></span>
+            </button>
+          </form>
+
+          <div id="status-result" class="result hidden">
+            <div class="result-header">
+              <h3>Transaction Status</h3>
+            </div>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Request ID</span>
+                <span class="result-value" id="res-st-request-id">-</span>
+                <button class="btn-copy" data-copy="res-st-request-id">Copy</button>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Operation ID</span>
+                <span class="result-value" id="res-st-operation-id">-</span>
+                <button class="btn-copy" data-copy="res-st-operation-id">Copy</button>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Operation Status</span>
+                <span class="result-value status-badge" id="res-st-op-status">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Request Status</span>
+                <span class="result-value status-badge" id="res-st-req-status">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Signature Valid</span>
+                <span class="result-value" id="res-st-signature">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Timestamp</span>
+                <span class="result-value" id="res-st-timestamp">-</span>
+              </div>
+            </div>
+            <details class="result-details">
+              <summary>View Raw Response</summary>
+              <pre id="status-raw-response" class="json-viewer"></pre>
+            </details>
+          </div>
+
+          <div id="status-error" class="error hidden"></div>
+        </div>
+      </section>
+
+      <!-- Callbacks Tab -->
+      <section id="tab-callbacks" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Callback Notifications</h2>
+              <p class="card-subtitle">Real-time transaction status updates from DigiCash</p>
+            </div>
+            <button class="btn btn-secondary" id="clear-callbacks">Clear Logs</button>
+          </div>
+
+          <div class="callbacks-list" id="callbacks-list">
+            <div class="empty-state">
+              <p>No callbacks received yet.</p>
+              <p class="form-hint">Callback URL: <code id="callback-url-display">Loading...</code></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>SVI DigiCash Payment Portal &copy; 2026 | CPS-471</p>
+    </footer>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
