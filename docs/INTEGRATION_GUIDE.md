@@ -16,8 +16,8 @@ This document provides a comprehensive guide for integrating with the DigiCash/I
 | Credential | Description | Example |
 |------------|-------------|---------|
 | `service_id` | Unique merchant identifier | `service.svi` |
-| `passwork` | Merchant password (keep confidential) | `passw0rd@SVI` |
-| `secret_key` | HMAC-SHA256 signing key | `dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<` |
+| `passwork` | Merchant password (keep confidential, server-side only) | `••••••••••••` |
+| `secret_key` | HMAC-SHA256 signing key (server-side only, never committed) | `••••••••••••••••••••••••••••••` |
 
 ### Signature Generation
 
@@ -36,7 +36,7 @@ All API requests must include a valid HMAC-SHA256 signature.
 ```javascript
 const params = {
   service_id: 'service.svi',
-  passwork: 'passw0rd@SVI',
+  passwork: '••••••••••••',
   amount: '10000',
   currency: 'PHP',
   operation_id: 'SVI1234567890',
@@ -46,7 +46,7 @@ const params = {
   return_url: 'https://merchant.com/return'
 };
 
-// Concatenated: "service.svipassw0rd@SVI10000PHPSVI1234567890SVI1234567890gcashhttps://merchant.com/callbackhttps://merchant.com/return"
+// Concatenated: "service.svi[passwork]10000PHPSVI1234567890SVI1234567890gcashhttps://merchant.com/callbackhttps://merchant.com/return"
 // Signature: HMAC-SHA256(concatenated, secret_key)
 ```
 
@@ -394,8 +394,8 @@ Create `.env` file with your credentials:
 
 ```env
 DIGICASH_SERVICE_ID=service.svi
-DIGICASH_PASSWORK=passw0rd@SVI
-DIGICASH_SECRET_KEY=dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<
+DIGICASH_PASSWORK=your_passwork
+DIGICASH_SECRET_KEY=your_secret_key
 DIGICASH_BASE_URL=https://uat-api.fastpayph.com
 PORT=3000
 CALLBACK_URL=https://your-domain.com/api/callback

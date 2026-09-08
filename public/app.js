@@ -3,6 +3,7 @@
 // Configuration
 const API_BASE = '/api';
 let banksData = {};
+let apiConfig = {};
 
 // DOM Elements
 const tabs = document.querySelectorAll('.nav-btn');
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadBanks();
   setupEventListeners();
   setupTabs();
+  setupSlideSpy();
   loadCallbackUrl();
   loadCallbacks();
   setInterval(loadCallbacks, 5000); // Poll callbacks every 5 seconds
@@ -26,11 +28,24 @@ async function loadBanks() {
   try {
     const res = await fetch(`${API_BASE}/config`);
     const data = await res.json();
+    apiConfig = data;
     banksData = data.supportedBanks || {};
     populateBankDropdown();
+    renderApiInfo();
   } catch (err) {
     console.error('Failed to load banks:', err);
+    markApiInfoUnavailable();
   }
+}
+
+// Shown instead of endless "Loading…" when the backend is stale/unreachable
+function markApiInfoUnavailable() {
+  ['info-base-url', 'info-service-id', 'info-callback-url', 'info-return-url'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = 'Unavailable — rebuild the backend';
+  });
+  const portal = document.getElementById('info-portal-url');
+  if (portal) portal.textContent = window.location.origin;
 }
 
 function populateBankDropdown() {
@@ -62,6 +77,93 @@ function switchTab(tab) {
   currentTab = tab;
   tabs.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
   tabContents.forEach(content => content.classList.toggle('active', content.id === `tab-${tab}`));
+  if (tab === 'docs') loadDocs();
+  if (tab === 'presentation') renderMermaidDiagrams();
+}
+
+// Render presentation diagrams lazily on first tab open.
+// (Rendering while the tab is hidden produces zero-size/broken SVGs,
+// so we must NOT render at page load.)
+function renderMermaidDiagrams() {
+  if (!window.mermaid) return;
+  const nodes = [...document.querySelectorAll('#tab-presentation pre.mermaid:not([data-processed])')];
+  if (!nodes.length) return;
+  try {
+    const r = mermaid.run({ nodes });
+    if (r && r.catch) r.catch((e) => console.error('mermaid:', e));
+  } catch (e) {
+    console.error('mermaid:', e);
+  }
+}
+
+// Docs tab: render the markdown reference (loaded once)
+let docsLoaded = false;
+async function loadDocs() {
+  if (docsLoaded) return;
+  const el = document.getElementById('docs-content');
+  if (!el || !window.marked) {
+    if (el) el.innerHTML = '<p class="form-hint">Documentation renderer unavailable.</p>';
+    return;
+  }
+  try {
+    const res = await fetch('/docs/DIGICASH_API_DOCUMENTATION.md');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const md = await res.text();
+    el.innerHTML = marked.parse(md);
+    docsLoaded = true;
+    // Render any mermaid diagrams inside the doc (same lazy rule as slides)
+    if (window.mermaid) {
+      const nodes = [...el.querySelectorAll('pre code.language-mermaid')].map((code) => {
+        const pre = document.createElement('pre');
+        pre.className = 'mermaid';
+        pre.textContent = code.textContent;
+        code.closest('pre').replaceWith(pre);
+        return pre;
+      });
+      if (nodes.length) {
+        try {
+          const r = mermaid.run({ nodes });
+          if (r && r.catch) r.catch((e) => console.error('mermaid:', e));
+        } catch (e) {
+          console.error('mermaid:', e);
+        }
+      }
+    }
+  } catch (err) {
+    el.innerHTML = `<p class="form-hint">Could not load documentation: ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+// Presentation slide nav: smooth-scroll + scroll-spy highlighting
+function setupSlideSpy() {
+  const links = document.querySelectorAll('.slides-nav a');
+  if (!links.length) return;
+  const map = new Map();
+  links.forEach((a) => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (!el) return;
+    map.set(el, a);
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  if (!('IntersectionObserver' in window)) {
+    const first = links[0];
+    if (first) first.classList.add('active');
+    return;
+  }
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        links.forEach((a) => a.classList.remove('active'));
+        const link = map.get(en.target);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  map.forEach((_, el) => obs.observe(el));
 }
 
 // Event Listeners
@@ -88,6 +190,90 @@ function setupEventListeners() {
   // Copy all buttons
   document.getElementById('pay-copy-all')?.addEventListener('click', () => copyPayResult());
   document.getElementById('payout-copy-all')?.addEventListener('click', () => copyPayoutResult());
+
+  // Bank search (API Info tab)
+  document.getElementById('info-bank-search')?.addEventListener('input', (e) => {
+    renderBankList(e.target.value);
+  });
+}
+
+// API Info tab rendering
+function renderApiInfo() {
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el && value) el.textContent = value;
+  };
+  set('info-base-url', apiConfig.baseUrl);
+  set('info-service-id', apiConfig.serviceId);
+  set('info-callback-url', apiConfig.callbackUrl);
+  set('info-return-url', apiConfig.returnUrl);
+  set('info-portal-url', window.location.origin);
+  const bankCount = document.getElementById('info-bank-count');
+  if (bankCount && apiConfig.supportedBanksCount) {
+    bankCount.textContent = `(${apiConfig.supportedBanksCount})`;
+  }
+
+  const docsLink = document.getElementById('info-docs-link');
+  if (docsLink && apiConfig.docsUrl) docsLink.href = apiConfig.docsUrl;
+
+  // Human-readable labels for codes (stakeholder-friendly)
+  const METHOD_INFO = {
+    gcash: ['GCash', 'E-wallet payment'],
+    palawanpay: ['PalawanPay', 'Palawan pawnshop wallet'],
+    qrph: ['QRPh Standard', 'National QR-code payment'],
+    'qrph-vip': ['QRPh VIP', 'QRPh with higher limits'],
+    instapay: ['InstaPay', 'Instant transfer to a bank / wallet']
+  };
+  const PAY_STATUS_INFO = {
+    awaiting_redirect: ['Awaiting redirect', 'Waiting for the customer to open the payment page'],
+    initiated: ['Initiated', 'Transaction created, waiting for the customer'],
+    processing: ['Processing', 'Payment is being processed'],
+    paid: ['Paid', 'Money received successfully'],
+    fail: ['Failed', 'Payment rejected — see the provider message'],
+    expired: ['Expired', 'Payment window lapsed before completion']
+  };
+  const CALLBACK_STATUS_INFO = {
+    PROCESSING: ['Processing', 'DigiCash is still working on it'],
+    PAID: ['Paid', 'Final: money received'],
+    FAIL: ['Failed', 'Final: payment did not go through'],
+    EXPIRED: ['Expired', 'Final: payment window lapsed']
+  };
+
+  const methodRows = (elId, items) => {
+    const el = document.getElementById(elId);
+    if (!el || !items) return;
+    el.innerHTML = items.map((m) => {
+      const info = METHOD_INFO[m] || [m, ''];
+      return `<div class="desc-row"><span class="pill">${escapeHtml(info[0])}</span><span class="form-hint"><code>${escapeHtml(m)}</code> — ${escapeHtml(info[1])}</span></div>`;
+    }).join('');
+  };
+  methodRows('info-pay-methods', apiConfig.supportedPaymentMethods);
+  methodRows('info-payout-methods', apiConfig.supportedPayoutMethods);
+
+  const statusRows = (elId, infoMap, items) => {
+    const el = document.getElementById(elId);
+    if (!el || !items) return;
+    el.innerHTML = items.map((s) => {
+      const info = infoMap[s] || [s, ''];
+      return `<div class="desc-row"><span class="status-badge ${String(s).toLowerCase()}">${escapeHtml(info[0])}</span><span class="form-hint"><code>${escapeHtml(s)}</code> — ${escapeHtml(info[1])}</span></div>`;
+    }).join('');
+  };
+  statusRows('info-pay-statuses', PAY_STATUS_INFO, apiConfig.transactionStatuses?.pay);
+  statusRows('info-callback-statuses', CALLBACK_STATUS_INFO, apiConfig.transactionStatuses?.callback);
+
+  renderBankList('');
+}
+
+function renderBankList(filter) {
+  const el = document.getElementById('info-bank-list');
+  if (!el) return;
+  const q = (filter || '').trim().toLowerCase();
+  const entries = Object.entries(banksData)
+    .sort((a, b) => a[1].localeCompare(b[1]))
+    .filter(([id, name]) => !q || id.toLowerCase().includes(q) || name.toLowerCase().includes(q));
+  el.innerHTML = entries.length
+    ? entries.map(([id, name]) => `<div class="bank-row"><span class="bank-id">${escapeHtml(id)}</span><span>${escapeHtml(name)}</span></div>`).join('')
+    : '<div class="bank-row">No matches</div>';
 }
 
 // API Helpers
@@ -484,10 +670,13 @@ function copyPayoutResult() {
 
 // Callbacks
 async function loadCallbackUrl() {
+  // Show the callback URL actually sent to DigiCash (from server config),
+  // falling back to this portal's own address.
+  const url = apiConfig.callbackUrl || `${window.location.origin}/api/callback`;
+  const display = document.getElementById('callback-url-display');
+  if (display) display.textContent = url;
   try {
-    const res = await fetch(`${API_BASE}/config`);
-    const data = await res.json();
-    document.getElementById('callback-url-display').textContent = `${window.location.origin}/api/callback`;
+    await fetch(`${API_BASE}/config`);
   } catch (err) {
     console.error('Failed to load config:', err);
   }

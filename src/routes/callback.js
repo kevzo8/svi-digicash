@@ -158,10 +158,20 @@ router.get('/config', (req, res) => {
   res.json({
     serviceId: config.digicash.serviceId,
     baseUrl: config.digicash.baseUrl,
+    callbackUrl: config.callback.url,
+    returnUrl: config.callback.returnUrl,
     supportedPaymentMethods: config.paymentMethods.pay,
     supportedPayoutMethods: config.paymentMethods.payout,
     supportedBanksCount: Object.keys(config.bankMappings).length,
     supportedBanks: config.bankMappings,
+    upstreamEndpoints: {
+      pay: 'POST /pay',
+      payout: 'POST /payout',
+      status: 'POST /status',
+      callback: 'POST {your callback_url}'
+    },
+    transactionStatuses: config.transactionStatuses,
+    docsUrl: 'https://documenter.getpostman.com/view/40991288/2sB3dLTB3U',
     credentials: {
       serviceIdLength: (config.digicash.serviceId || '').length,
       passworkLength: (config.digicash.passwork || '').length,

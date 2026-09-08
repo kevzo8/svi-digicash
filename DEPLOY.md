@@ -77,8 +77,8 @@ cat .env
 **Required .env variables:**
 ```env
 DIGICASH_SERVICE_ID=service.svi
-DIGICASH_PASSWORK=passw0rd@SVI
-DIGICASH_SECRET_KEY=dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<
+DIGICASH_PASSWORK=your_passwork
+DIGICASH_SECRET_KEY=your_secret_key
 DIGICASH_BASE_URL=https://api.fastpayph.com
 CALLBACK_URL=http://18.246.254.97:3000/api/callback
 RETURN_URL=http://18.246.254.97:3000/payment/return

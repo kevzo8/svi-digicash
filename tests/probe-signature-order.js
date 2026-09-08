@@ -13,12 +13,12 @@ const crypto = require('crypto');
 const https = require('https');
 
 const SECRET = process.env.DIGICASH_SECRET_KEY;
-const SERVICE_ID = process.env.DIGICASH_SERVICE_ID || 'service.svi';
-const PASSWORK = process.env.DIGICASH_PASSWORK || 'passw0rd@SVI';
+const SERVICE_ID = process.env.DIGICASH_SERVICE_ID;
+const PASSWORK = process.env.DIGICASH_PASSWORK;
 const BASE = process.env.DIGICASH_BASE_URL || 'https://api.fastpayph.com';
 
-if (!SECRET) {
-  console.error('DIGICASH_SECRET_KEY not set in container env');
+if (!SECRET || !SERVICE_ID || !PASSWORK) {
+  console.error('DIGICASH_SECRET_KEY, DIGICASH_SERVICE_ID and DIGICASH_PASSWORK must all be set (never hardcode credentials)');
   process.exit(1);
 }
 

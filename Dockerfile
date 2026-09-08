@@ -28,6 +28,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
+# Docs are served at runtime by the Docs tab
+COPY docs/ ./docs/
 
 # NOTE: config.env is NOT copied on purpose (it's gitignored and may not
 # exist on fresh clones). Runtime config comes from docker-compose

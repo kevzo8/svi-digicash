@@ -61,8 +61,8 @@ console.log();
 // Test 4: Nested object handling (customer object in payout)
 console.log('📋 Test 4: Nested Object Handling (Payout Customer)');
 const testParams4 = {
-  service_id: 'service.svi',
-  passwork: 'passw0rd@SVI',
+  service_id: 'service.test',
+  passwork: 'test_passwork',
   amount: '1000',
   currency: 'PHP',
   operation_id: 'PO123',
@@ -82,7 +82,7 @@ const testParams4 = {
 };
 const flattened4 = flattenParams(testParams4);
 console.log('Flattened:', flattened4);
-const signature4 = generateSignature(testParams4, 'dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<');
+const signature4 = generateSignature(testParams4, testSecretKey);
 console.log('Signature:', signature4);
 console.log();
 
@@ -138,11 +138,13 @@ console.log('Validation result:', validation2);
 console.log('Valid signature accepted:', validation2.valid ? '✅ PASS' : '❌ FAIL');
 console.log();
 
-// Test 8: Real credentials test
-console.log('📋 Test 8: Real Credentials (SVI DigiCash)');
+// Test 8: Sign/verify round-trip with realistic payload shape
+// (uses dummy credentials - round-trip mechanics is what's tested;
+// real credentials live only in config.env, never in code)
+console.log('📋 Test 8: Sign/Verify Round-Trip');
 const realParams = {
-  service_id: 'service.svi',
-  passwork: 'passw0rd@SVI',
+  service_id: 'service.test',
+  passwork: 'test_passwork',
   amount: '10000',
   currency: 'PHP',
   operation_id: 'SVI' + Date.now(),
@@ -151,10 +153,10 @@ const realParams = {
   callback_url: 'https://callback.url/',
   return_url: 'https://return.url/'
 };
-const realSignature = generateSignature(realParams, 'dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<');
-console.log('Real credentials signature:', realSignature);
+const realSignature = generateSignature(realParams, testSecretKey);
+console.log('Generated signature:', realSignature);
 const realSigned = { ...realParams, signature: realSignature };
-const realValid = verifySignature(realSigned, 'dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<');
+const realValid = verifySignature(realSigned, testSecretKey);
 console.log('Verification:', realValid ? '✅ PASS' : '❌ FAIL');
 console.log();
 

@@ -28,6 +28,9 @@
       <button class="nav-btn" data-tab="payout">Pay Out</button>
       <button class="nav-btn" data-tab="status">Check Status</button>
       <button class="nav-btn" data-tab="callbacks">Callbacks</button>
+      <button class="nav-btn" data-tab="api-info">API Info</button>
+      <button class="nav-btn" data-tab="presentation">Presentation</button>
+      <button class="nav-btn" data-tab="docs">Docs</button>
     </nav>
 
     <!-- Main Content -->
@@ -345,6 +348,252 @@
           </div>
         </div>
       </section>
+
+      <!-- API Info Tab -->
+      <section id="tab-api-info" class="tab-content">
+        <div class="info-grid">
+          <div class="card info-card">
+            <div class="card-header"><h3>🌍 Environment</h3></div>
+            <div class="info-body">
+              <div class="kv"><span>Base URL</span><code id="info-base-url">Loading…</code></div>
+              <div class="kv"><span>Service ID</span><code id="info-service-id">Loading…</code></div>
+              <div class="kv"><span>Callback URL</span><code id="info-callback-url">Loading…</code></div>
+              <div class="kv"><span>Return URL</span><code id="info-return-url">Loading…</code></div>
+              <div class="kv"><span>Portal URL</span><code id="info-portal-url">Loading…</code></div>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>🔗 DigiCash API</h3></div>
+            <div class="info-body">
+              <h4>Endpoints (production)</h4>
+              <div class="kv"><span><code>POST /pay</code></span><span class="form-hint">Collect a payment (e-wallet or QR)</span></div>
+              <div class="kv"><span><code>POST /payout</code></span><span class="form-hint">Send money out via InstaPay</span></div>
+              <div class="kv"><span><code>POST /status</code></span><span class="form-hint">Check a transaction's status</span></div>
+              <div class="kv"><span><code>POST → callback</code></span><span class="form-hint">DigiCash notifies us: PAID, FAIL, etc.</span></div>
+              <h4>How a payment flows</h4>
+              <ol class="steps">
+                <li>Portal sends a <strong>signed</strong> request to DigiCash</li>
+                <li>DigiCash returns a payment page link</li>
+                <li>Customer opens the link and pays</li>
+                <li>DigiCash calls our callback with the result</li>
+              </ol>
+              <h4>Why does the portal proxy requests?</h4>
+              <p class="form-hint">Your browser never holds the secret key. The portal server signs each request securely and forwards DigiCash's answer back to this screen.</p>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>💳 Payment Methods</h3></div>
+            <div class="info-body">
+              <h4>Pay in (collect money)</h4>
+              <div class="badge-row" id="info-pay-methods"></div>
+              <h4>Pay out (send money)</h4>
+              <div class="badge-row" id="info-payout-methods"></div>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>🏦 Banks & Wallets <span id="info-bank-count"></span></h3></div>
+            <div class="info-body">
+              <input type="search" id="info-bank-search" class="search-input" placeholder="Search banks… (e.g. BDO, GCash, Maya)">
+              <div class="bank-list" id="info-bank-list"></div>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>✍️ Signature Recipe</h3></div>
+            <div class="info-body">
+              <ol class="steps">
+                <li>Concatenate payload <strong>values</strong> in key order (skip <code>signature</code>)</li>
+                <li>Use <code>-</code> for empty / null values</li>
+                <li>HMAC-SHA256 with the merchant <code>secret_key</code></li>
+                <li>Attach hex digest as <code>signature</code></li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>📊 Transaction Statuses</h3></div>
+            <div class="info-body">
+              <h4>Payment status (what you see in results)</h4>
+              <div class="badge-row" id="info-pay-statuses"></div>
+              <h4>Callback status (what DigiCash sends us)</h4>
+              <div class="badge-row" id="info-callback-statuses"></div>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>📚 Links</h3></div>
+            <div class="info-body link-list">
+              <a id="info-docs-link" href="#" target="_blank" rel="noopener">📖 DigiCash API docs (Postman)</a>
+            </div>
+          </div>
+
+          <div class="card info-card">
+            <div class="card-header"><h3>🖥️ Portal API (click to visit)</h3></div>
+            <div class="info-body link-list">
+              <a href="/api/health" target="_blank" rel="noopener"><code>GET /api/health</code> — server status</a>
+              <a href="/api/config" target="_blank" rel="noopener"><code>GET /api/config</code> — config & credentials check</a>
+              <a href="/api/callbacks" target="_blank" rel="noopener"><code>GET /api/callbacks</code> — received callbacks</a>
+              <a href="/api" target="_blank" rel="noopener"><code>GET /api</code> — endpoint index</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Presentation Tab -->
+      <section id="tab-presentation" class="tab-content">
+        <div class="pres-layout">
+          <aside class="slides-nav card">
+            <ol>
+              <li><a href="#slide-1" class="active"><span class="num">1</span> Cover</a></li>
+              <li><a href="#slide-2"><span class="num">2</span> How money moves</a></li>
+              <li><a href="#slide-3"><span class="num">3</span> The 4 APIs</a></li>
+              <li><a href="#slide-4"><span class="num">4</span> Security & signing</a></li>
+              <li><a href="#slide-5"><span class="num">5</span> Pay flow</a></li>
+              <li><a href="#slide-6"><span class="num">6</span> Payouts</a></li>
+              <li><a href="#slide-7"><span class="num">7</span> Statuses</a></li>
+              <li><a href="#slide-8"><span class="num">8</span> Errors</a></li>
+              <li><a href="#slide-9"><span class="num">9</span> Our POC</a></li>
+              <li><a href="#slide-10"><span class="num">10</span> Evidence & next steps</a></li>
+            </ol>
+          </aside>
+          <div class="slides">
+            <div class="card slide" id="slide-1">
+              <h2>SVI DigiCash — DigiCash API Integration</h2>
+              <p class="slide-sub">Ticket CPS-471 · Payment gateway POC · Production: api.fastpayph.com · Merchant: service.svi</p>
+              <div class="slide-grid-2">
+                <div class="mini-card"><strong>🎯 Goal</strong><p class="form-hint">Collect payments (e-wallets, QR) and disburse payouts (InstaPay) through DigiCash.</p></div>
+                <div class="mini-card"><strong>✅ Status</strong><p class="form-hint">Integration proven end-to-end up to DigiCash. Blocked on their provider config + wallet funding.</p></div>
+              </div>
+            </div>
+
+            <div class="card slide" id="slide-2">
+              <h2>How money moves</h2>
+              <p class="slide-sub">DigiCash is the middleman between us, the provider, and the banks.</p>
+              <pre class="mermaid">flowchart LR
+    C[Customer] &lt;-->|pays / receives| D[DigiCash API]
+    D &lt;-->|forwards to| P[Provider Starpay]
+    P &lt;-->|settles with| B[Banks and wallets]
+    S[SVI merchant service.svi] &lt;-->|signed requests + callbacks| D</pre>
+            </div>
+
+            <div class="card slide" id="slide-3">
+              <h2>The 4 APIs</h2>
+              <p class="slide-sub">Three we call, one that calls us.</p>
+              <div class="slide-grid-2">
+                <div class="mini-card"><strong>POST /pay</strong><p class="form-hint">Start a customer payment → returns a payment-page link.</p></div>
+                <div class="mini-card"><strong>POST /payout</strong><p class="form-hint">Send money to any bank/wallet via InstaPay.</p></div>
+                <div class="mini-card"><strong>POST /status</strong><p class="form-hint">Ask what happened to any transaction.</p></div>
+                <div class="mini-card"><strong>POST → callback</strong><p class="form-hint">DigiCash pushes PAID / FAIL / EXPIRED to us.</p></div>
+              </div>
+            </div>
+
+            <div class="card slide" id="slide-4">
+              <h2>Security & signing</h2>
+              <p class="slide-sub">Every request is HMAC-SHA256 signed. The secret never leaves our server.</p>
+              <ol class="steps">
+                <li>Concatenate field <strong>values</strong> in body order (skip <code>signature</code>)</li>
+                <li>Empty value becomes <code>-</code></li>
+                <li>HMAC-SHA256 with the merchant <code>secret_key</code></li>
+                <li>Attach the hex digest as <code>signature</code></li>
+              </ol>
+            </div>
+
+            <div class="card slide" id="slide-5">
+              <h2>Pay flow</h2>
+              <p class="slide-sub">Methods: GCash · PalawanPay · QRPh · QRPh VIP. Amounts in centavos as strings (₱100 → "10000").</p>
+              <pre class="mermaid">flowchart TD
+    A[Portal sends SIGNED request] --> B[POST /pay]
+    B --> C{Gateway signature OK?}
+    C -- No --> E[HTTP 400 code 2041]
+    C -- Yes --> F[Forward to Starpay]
+    F --> G{Provider accepts?}
+    G -- No --> H[operation FAIL + message]
+    G -- Yes --> I[redirect_url for customer]
+    I --> J[Customer pays]
+    J --> K[Callback PAID / FAIL / EXPIRED]</pre>
+            </div>
+
+            <div class="card slide" id="slide-6">
+              <h2>Payouts</h2>
+              <p class="slide-sub">InstaPay disbursements from our prefunded DigiCash wallet to 92 banks & wallets.</p>
+              <div class="slide-grid-2">
+                <div class="mini-card"><strong>Top destinations</strong><p class="form-hint">GCash · Maya · BDO · BPI · Metrobank · PNB · LANDBANK · UnionBank · GoTyme · Tonik · ShopeePay · GrabPay · Coins.ph</p></div>
+                <div class="mini-card"><strong>⚠️ Wallet funding</strong><p class="form-hint">Empty wallet returns code 7015. DigiCash must top up merchant service.svi before payouts can complete.</p></div>
+              </div>
+            </div>
+
+            <div class="card slide" id="slide-7">
+              <h2>Statuses</h2>
+              <p class="slide-sub">Responses use lowercase, callbacks use UPPERCASE. PAID / FAIL / EXPIRED are final.</p>
+              <pre class="mermaid">stateDiagram-v2
+    [*] --> initiated
+    initiated --> processing
+    processing --> paid
+    processing --> fail
+    processing --> expired
+    paid --> [*]
+    fail --> [*]
+    expired --> [*]</pre>
+            </div>
+
+            <div class="card slide" id="slide-8">
+              <h2>Errors — which layer failed?</h2>
+              <p class="slide-sub">Gateway errors are ours to fix. Provider errors are DigiCash's.</p>
+              <table class="api-table">
+                <tr><th>Code</th><th>Meaning</th><th>Action</th></tr>
+                <tr><td><code>2041</code></td><td>Our signature rejected</td><td>Fix signing</td></tr>
+                <tr><td><code>2043</code></td><td>Unknown merchant</td><td>Check service_id / environment</td></tr>
+                <tr><td><code>3011</code></td><td>Provider failed</td><td>Read provider message; escalate to DigiCash</td></tr>
+                <tr><td><code>7015</code></td><td>Wallet empty</td><td>Fund merchant wallet</td></tr>
+              </table>
+            </div>
+
+            <div class="card slide" id="slide-9">
+              <h2>Our POC</h2>
+              <p class="slide-sub">Portal tabs: Pay In · Pay Out · Check Status · Callbacks · API Info. Secret stays server-side.</p>
+              <pre class="mermaid">flowchart TD
+    UI[Browser forms] --> PXY[Portal server signs + proxies]
+    PXY --> DC[DigiCash pay payout status]
+    DC -. callback .-> CB[Webhook verify + log]
+    CB --> UI4[Callbacks tab]</pre>
+            </div>
+
+            <div class="card slide" id="slide-10">
+              <h2>Evidence & next steps</h2>
+              <p class="slide-sub">Proven: our signing passes DigiCash's gateway (7-variant live probe).</p>
+              <table class="api-table">
+                <tr><th>Test</th><th>Result</th></tr>
+                <tr><td>Pay (GCash, QRPh)</td><td>Gateway ✅ → provider ❌ Invalid signature (DigiCash to fix)</td></tr>
+                <tr><td>Payout (InstaPay)</td><td>Gateway ✅ → 7015 wallet empty (needs funding)</td></tr>
+                <tr><td>Callbacks</td><td>Simulated PAID/FAIL/EXPIRED ✅ · live blocked by firewall</td></tr>
+              </table>
+              <ol class="steps" style="margin-top:12px">
+                <li><strong>DigiCash:</strong> fix Starpay provider signing + fund wallet</li>
+                <li><strong>AWS admin:</strong> open port 3000 + Elastic IP</li>
+                <li><strong>Us:</strong> full end-to-end + production hardening</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Docs Tab -->
+      <section id="tab-docs" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>DigiCash API Documentation</h2>
+              <p class="card-subtitle">Full technical reference — rendered from <code>docs/DIGICASH_API_DOCUMENTATION.md</code></p>
+            </div>
+          </div>
+          <div id="docs-content" class="docs-content">
+            <p class="form-hint">Loading documentation…</p>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
@@ -354,5 +603,8 @@
   </div>
 
   <script src="/app.js"></script>
+  <script src="/vendor/mermaid.min.js"></script>
+  <script src="/vendor/marked.min.js"></script>
+  <script>if (window.mermaid) { mermaid.initialize({ startOnLoad: false, theme: 'neutral' }); }</script>
 </body>
 </html>

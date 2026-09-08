@@ -32,8 +32,8 @@ Copy `.env.example` to `.env` and update with your credentials:
 
 ```env
 DIGICASH_SERVICE_ID=service.svi
-DIGICASH_PASSWORK=passw0rd@SVI
-DIGICASH_SECRET_KEY=dl)m38(0BDyXhPJpLH)T!Rz|E?,v[<
+DIGICASH_PASSWORK=your_passwork
+DIGICASH_SECRET_KEY=your_secret_key
 DIGICASH_BASE_URL=https://uat-api.fastpayph.com
 PORT=3000
 CALLBACK_URL=https://your-ngrok-url.ngrok-free.app/api/callback
@@ -106,7 +106,7 @@ const DigiCashClient = require('./src/api/digicash-client');
 
 const client = new DigiCashClient({
   serviceId: 'service.svi',
-  passwork: 'passw0rd@SVI',
+  passwork: 'your_passwork',
   secretKey: 'your-secret-key',
   callbackUrl: 'https://your-domain.com/api/callback',
   returnUrl: 'https://your-domain.com/payment/return'

@@ -32,9 +32,8 @@ Thumbs.db
 tests/
 *.test.js
 
-# Documentation (optional - remove if not needed)
-docs/
-README.md
+# Documentation - NEEDED at runtime (Docs tab serves ./docs)
+# (keep docs/ in the build context)
 
 # Docker
 Dockerfile*

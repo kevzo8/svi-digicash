@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Serve documentation markdown (read-only reference files)
+app.use('/docs', express.static(path.join(__dirname, '../docs')));
+
 // Request logging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
