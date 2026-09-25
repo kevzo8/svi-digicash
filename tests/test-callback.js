@@ -81,8 +81,8 @@ async function runCallbackTests() {
   await test('Simulate PAID Callback', async () => {
     const payload = {
       external_id: '7105563620335199',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'IOTTEST1749280392147',
       payment_method: 'gcash',
       amount: '15000',
@@ -124,8 +124,8 @@ async function runCallbackTests() {
   await test('Simulate FAIL Callback', async () => {
     const payload = {
       external_id: '5869420837044389',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'CI2025010216143637034F2788',
       payment_method: 'gcash',
       amount: '10768',
@@ -155,8 +155,8 @@ async function runCallbackTests() {
   await test('Simulate EXPIRED Callback', async () => {
     const payload = {
       external_id: '9999999999999999',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'EXPIRED_TEST_123',
       payment_method: 'qrph',
       amount: '5000',
@@ -193,8 +193,8 @@ async function runCallbackTests() {
   await test('Simulate PROCESSING Callback', async () => {
     const payload = {
       external_id: '1111111111111111',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'PROCESSING_TEST_456',
       payment_method: 'palawanpay',
       amount: '20000',
@@ -231,8 +231,8 @@ async function runCallbackTests() {
   await test('Invalid Signature Detection', async () => {
     const payload = {
       external_id: '2222222222222222',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'INVALID_SIG_TEST',
       payment_method: 'gcash',
       amount: '1000',
@@ -267,8 +267,8 @@ async function runCallbackTests() {
   await test('Missing Signature Handling', async () => {
     const payload = {
       external_id: '3333333333333333',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'MISSING_SIG_TEST',
       payment_method: 'gcash',
       amount: '1000',
@@ -303,8 +303,8 @@ async function runCallbackTests() {
   await test('Callback with Special Characters', async () => {
     const payload = {
       external_id: '4444444444444444',
-      provider_id: 'STARPAY_PAY',
-      provider_name: 'STARPAY',
+      provider_id: 'TESTPROV_PAY',
+      provider_name: 'TEST_PROVIDER',
       operation_id: 'SPECIAL_CHARS_TEST',
       payment_method: 'gcash',
       amount: '10000',

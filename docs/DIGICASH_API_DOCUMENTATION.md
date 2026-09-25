@@ -26,6 +26,7 @@
 13. [Test evidence](#13-test-evidence)
 14. [Open items & next steps](#14-open-items--next-steps)
 15. [Glossary](#15-glossary)
+16. [DigiCash FAQ — official answers](#16-digicash-faq--official-answers)
 
 ---
 
@@ -41,7 +42,7 @@ Four parties are involved in every transaction:
 ```mermaid
 flowchart LR
     C[🧑 Customer] <-->|pays / receives| D[DigiCash API]
-    D <-->|forwards to| P[🏦 Provider\nStarpay]
+    D <-->|forwards to| P[🏦 Upstream provider]
     P <-->|settles with| B[🏧 Banks & wallets\nGCash, Maya, BDO…]
     S[🏢 SVI merchant\nservice.svi] <-->|signed requests\n+ callbacks| D
 ```
@@ -51,7 +52,7 @@ flowchart LR
 | **Customer** | Pays through GCash / QR, or receives a payout |
 | **SVI (merchant `service.svi`)** | Our side — sends signed requests, receives callbacks |
 | **DigiCash** | Gateway — validates us, routes to the provider |
-| **Provider (Starpay)** | Actually moves the money with banks and wallets |
+| **Upstream provider** | Moves the money with banks and wallets (DigiCash's samples name Starpay — TBC for production) |
 
 ---
 
@@ -75,13 +76,23 @@ All calls are `POST` with `Content-Type: application/json`.
 | **Status** | `POST /status` | Ask "what happened to transaction X?" | Us → DigiCash |
 | **Callback** | `POST {our callback_url}` | DigiCash pushes result updates to us | DigiCash → Us |
 
+**Pay vs payout — don't mix them up:**
+
+| | Pay (money in) | Payout (money out) |
+|---|---|---|
+| Direction | Customer → us | Us → customer |
+| Who acts | Customer pays on a DigiCash page | We push to their bank / wallet |
+| Methods | GCash, PalawanPay, QRPh, QRPh VIP | InstaPay (92 banks & wallets) |
+| Money comes from | Customer's wallet | Our prefunded DigiCash wallet |
+| Typical use | Checkout, top-up, collection | Disbursement, salary, refund |
+
 ```mermaid
 flowchart TD
     A[Portal: user fills Pay form] --> B[Portal server signs request]
     B --> C[POST /pay → DigiCash]
     C --> D{Gateway signature OK?}
     D -- No --> E[HTTP 400 · code 2041\nInvalid Signature]
-    D -- Yes --> F[DigiCash → Starpay provider]
+    D -- Yes --> F[DigiCash → provider]
     F --> G{Provider accepts?}
     G -- No --> H[HTTP 200 · operation FAIL\nprovider message]
     G -- Yes --> I[HTTP 200 + redirect_url]
@@ -150,12 +161,12 @@ Responses and callbacks carry signatures the same way, so we can verify nothing 
 
 **Payment methods:**
 
-| Code | Human name | What it is |
-|---|---|---|
-| `gcash` | GCash | E-wallet payment |
-| `palawanpay` | PalawanPay | Palawan pawnshop wallet |
-| `qrph` | QRPh Standard | National QR-code payment |
-| `qrph-vip` | QRPh VIP | QRPh with higher limits |
+| Code | Human name | What it is | Status |
+|---|---|---|---|
+| `gcash` | GCash | E-wallet payment | ❌ Discontinued by DigiCash |
+| `palawanpay` | PalawanPay | Palawan pawnshop wallet | ❌ Discontinued by DigiCash |
+| `qrph` | QRPh Standard | National QR-code payment (up to ₱300–500k) | ✅ Use this |
+| `qrph-vip` | QRPh VIP | QRPh with higher limits | ✅ Use this |
 
 **Success response** — hand `redirect_url` to the customer:
 
@@ -176,7 +187,7 @@ sequenceDiagram
     participant U as Portal UI
     participant S as Portal server
     participant D as DigiCash
-    participant P as Starpay
+    participant P as Provider
     participant C as Customer
     U->>S: Pay ₱100 via QRPh
     S->>S: Sign request (Section 4)
@@ -230,7 +241,7 @@ sequenceDiagram
     participant U as Portal UI
     participant S as Portal server
     participant D as DigiCash
-    participant P as Starpay
+    participant P as Provider
     participant B as Destination bank
     U->>S: Payout ₱500 → Maya 0927…
     S->>S: Sign request (Section 4)
@@ -255,7 +266,8 @@ sequenceDiagram
 | Field | Meaning |
 |---|---|
 | `passwork`, `service_id` | Our credentials (passwork first — [Section 4](#4-authentication--signatures)) |
-| `request_id` | DigiCash's ID from the Pay/Payout response |
+| `request_id` | DigiCash's ID from the Pay/Payout response (sent when available) |
+| `operation_id` | **Required by the live API** — omitting it returns `5020 operation_id is required`, even with a valid `request_id`. The docs only mention `request_id`; live behavior differs. Our client sends both when available. |
 | `signature` | HMAC per [Section 4](#4-authentication--signatures) |
 
 Response echoes **both** IDs so we can match it to our records:
@@ -292,7 +304,7 @@ DigiCash `POST`s to our `callback_url` whenever a transaction changes state. Our
 }
 ```
 
-Only four statuses ever arrive: `PROCESSING`, `PAID`, `FAIL`, `EXPIRED`.
+Only four statuses ever arrive: `PROCESSING`, `PAID`, `FAIL`, `EXPIRED`. (Provider fields quote DigiCash's samples, which name Starpay — production provider TBC.)
 
 > ⚠️ Callbacks cannot reach us yet — our EC2 port 3000 is firewalled. Polling `/status` covers the gap until the port (or a tunnel) is opened. See [Section 14](#14-open-items--next-steps).
 
@@ -341,14 +353,14 @@ The portal converts automatically (type `100` → sends `"10000"`).
 
 ## 11. Errors we have seen
 
-| Code | HTTP | Where | Meaning |
-|---|---|---|---|
-| `0` | 200 | request | Success |
-| `2041` | 400 | gateway | **Our** signature rejected — fix signing, do not retry blindly |
-| `2043` | 400 | gateway | Service ID unknown (seen on UAT, where we aren't registered) |
-| `3011` | 200 | provider wrapper | Downstream failure — read `provider_error_message` |
-| `7015` | 400 | business rule | Merchant wallet empty — fund it, then retry |
-| `provider: "Invalid signature"` | 200 | Starpay | DigiCash↔provider signing misconfigured — DigiCash must fix ([Section 13](#13-test-evidence)) |
+| Code | HTTP | Where | Meaning | Owner | Status |
+|---|---|---|---|---|---|
+| `0` | 200 | request | Success | — | ✅ Working |
+| `2041` | 400 | gateway | **Our** signature rejected — the gateway HMAC check failed | Ours | ✅ Fixed — 7-variant live probe (2026-09-07) proved only the Postman field order passes; all other orders are correctly rejected |
+| `2043` | 400 | gateway | Service ID unknown in that environment (seen on UAT, where we were never registered) | Ours | ✅ Resolved — production accepts `service.svi` since the move to `api.fastpayph.com` |
+| `3011` | 200 | provider wrapper | Downstream failure — read `provider_error_message` | DigiCash | 🔴 Open (awaiting their fix) |
+| `7015` | 400 | business rule | Merchant wallet empty — fund it, then retry | DigiCash | 🔴 Open (awaiting funding) |
+| `provider: "Invalid signature"` | 200 | Upstream provider | DigiCash↔provider signing misconfigured — DigiCash must fix ([Section 13](#13-test-evidence)) | DigiCash | 🔴 Open (awaiting their fix) |
 
 Two layers, two messages — don't confuse them:
 
@@ -427,26 +439,72 @@ Environment: production `https://api.fastpayph.com` · merchant `service.svi` ·
 | 1 | Provider `Invalid signature` (`3011`) on every accepted transaction | **DigiCash** | Awaiting fix — our signing proven correct ([Section 13](#13-test-evidence).1–3) |
 | 2 | Fund merchant wallet (`7015`) so payouts can complete | **DigiCash** | Awaiting top-up |
 | 3 | Open EC2 port 3000 (security group) + attach Elastic IP | **Our AWS admin** | Requested — needed for real callbacks & stable URL |
-| 4 | Clarify QRPh vs QRPh VIP difference (limits/fees) | **DigiCash** | Asked |
-| 5 | Confirm GCash/PalawanPay removal | **DigiCash** | POC focuses on QRPh meanwhile |
+| 4 | Clarify QRPh vs QRPh VIP difference (limits/fees) | **DigiCash** | Partly answered (QRPh up to ₱300–500k); VIP detail still open |
+| 5 | Confirm GCash/PalawanPay removal | **DigiCash** | ✅ Confirmed discontinued — POC focuses on QRPh |
 | 6 | After 1–5: full end-to-end (pay → redirect → callback → status) + production hardening (DB, rate limits, retries) | **Us** | Ready to execute |
+| 7 | Confirm fee setup (convenience fee; payor-pays vs MDR-deducted) and receive sample daily settlement report | **DigiCash** | Awaiting confirmation |
 
 ---
 
 ## 15. Glossary
 
-| Term | Meaning |
+| Term | Meaning in one line |
 |---|---|
+| **DigiCash (gateway)** | The company and API we integrate with. Checks our identity (signature), validates each request, routes the money movement to a provider, and notifies us of results. Think: the bank branch we walk into. |
+| **Upstream provider** | The company *behind* DigiCash that physically moves the money (owns the connections into InstaPay/banks). We never talk to it directly — only DigiCash does. Think: the armored van behind the branch. (DigiCash's samples name Starpay — TBC for production.) |
+| **Bank / e-wallet** | Where money starts or ends (GCash, Maya, BDO…). Different from the provider: the bank *holds* the funds; the provider *carries* the transfer between DigiCash and the bank. |
+| **Merchant (us)** | Our account with DigiCash (`service.svi`): credentials + a prefunded wallet that payouts draw from. |
+| **Gateway check** | DigiCash's front-door validation of our requests — this is where codes `2041`/`2043` come from. |
 | **Minor units** | Amount in centavos as a string: ₱1.00 → `"100"` |
 | **`operation_id`** | ID we generate per transaction |
 | **`request_id`** | DigiCash's ID, returned in responses; used for status checks |
 | **`trans_id` / `external_id`** | DigiCash/provider tracking IDs |
-| **Gateway** | DigiCash's front door — checks our signature first |
-| **Provider (Starpay)** | Moves the money behind DigiCash |
 | **Callback / webhook** | DigiCash calling us with result updates |
 | **InstaPay** | Philippine instant-transfer rail for payouts |
 | **QRPh** | National QR payment standard (BSP) |
 
 ---
 
-*Generated for CPS-471 · SVI DigiCash POC · https://github.com/kevzo8/svi-digicash*
+*SVI DigiCash POC · CPS-471*
+
+---
+
+## 16. DigiCash FAQ — official answers
+
+Verbatim questions from our team, with DigiCash's answers (typos cleaned, meaning preserved).
+
+**Q1. Any per-merchant sub-account, wallet, or ledger beyond a single `service_id`?** *(gating)*
+> Each dealer will have its own `service_id` — they are sub-merchants (e.g. `svi01` = Ford, `svi02` = Toyota). Per-dealer wallets are therefore possible on their side.
+
+**Q2. Any bulk transaction retrieval, date-range report, or daily settlement statement?** *(gating)*
+> Yes — merchant portal with downloadable bulk transaction reports (both deposits and withdrawals). DigiCash will send a sample one-day report.
+
+**Q3. Callback retry policy — attempts, window, guaranteed delivery?**
+> Not directly answered; DigiCash pointed to dynamic QR instead (single-use QR that expires after a set time). Retry policy still open — ask again.
+
+**Q4. Same `operation_id` submitted twice — rejected, idempotent, or duplicated?**
+> Dynamic QR is used and `operation_id` is unique — no duplicate payments occur.
+
+**Q5. Is there a Production environment + process for credentials?** *(gating)*
+> Yes, a prod environment exists; access is granted after passing UAT.
+
+**Q6. How do we verify an inbound callback signature?**
+> All transactions are verifiable; their CSRs will help if needed. (Vague — our POC verifies per §4 mechanics; confirm field order with them.)
+
+**Q7. Refund, void, or reversal capability?**
+> Exists, but handled on our end. Settlement is T+0 or T+1.
+
+**Q8. Cards, bank transfer, or only the four listed methods?**
+> CC processing + QRPh offered; no bank transfers. QRPh now up to ₱300k–500k. **GCash and PalawanPay are discontinued.**
+
+**Q9. Rate limits / throughput ceilings?**
+> Thousands of transactions per second — stated capacity 3,000 txn/sec.
+
+**Q10. Confirm amounts are minor units (`"15000"` = ₱150.00)?**
+> Confirmed — last two digits are decimals.
+
+**Q11. Direct LTO/MAIRDOE accreditation, via this API or separately?**
+> Planned, but "too much politics" — no timeline.
+
+**Q12. Fee schedule per method; how does `fee_amount` relate to charges?**
+> QRPh fee is a convenience fee or a percentage of amount; per discussion with GVG it will be a convenience fee, configurable so either the payor covers it or the MDR is deducted from what SVI receives.

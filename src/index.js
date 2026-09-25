@@ -60,7 +60,8 @@ app.post('/api/proxy/payout', async (req, res) => {
 
 app.post('/api/proxy/status', async (req, res) => {
   try {
-    const result = await global.digicash.checkStatus(req.body.requestId);
+    const { requestId, operationId } = req.body || {};
+    const result = await global.digicash.checkStatus({ requestId, operationId });
     res.json(result);
   } catch (err) {
     const status = err.response?.status || 500;

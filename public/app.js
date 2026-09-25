@@ -10,14 +10,16 @@ const tabs = document.querySelectorAll('.nav-btn');
 const tabContents = document.querySelectorAll('.tab-content');
 
 // State
-let currentTab = 'pay';
+let currentTab = 'demo';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  initTheme();
   await loadBanks();
   setupEventListeners();
   setupTabs();
   setupSlideSpy();
+  setupSlideKeys();
   loadCallbackUrl();
   loadCallbacks();
   setInterval(loadCallbacks, 5000); // Poll callbacks every 5 seconds
@@ -61,6 +63,40 @@ function populateBankDropdown() {
     option.textContent = `${name} (${id})`;
     select.appendChild(option);
   });
+
+  // Same list for the demo phone payout screen
+  const demoSelect = document.getElementById('d-bank');
+  if (demoSelect && demoSelect.options.length <= 1) {
+    sortedBanks.forEach(([id, name]) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = `${name} (${id})`;
+      demoSelect.appendChild(option);
+    });
+  }
+}
+
+// Theme (dark/light), persisted; defaults to OS preference
+function initTheme() {
+  let theme = 'light';
+  try {
+    theme = localStorage.getItem('svi-theme')
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  } catch (e) { /* private mode etc. */ }
+  setTheme(theme);
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+  });
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem('svi-theme', theme); } catch (e) { /* ignore */ }
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.innerHTML = `<svg class="ic"><use href="#${theme === 'dark' ? 'i-sun' : 'i-moon'}"/></svg>`;
+    btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+  }
 }
 
 // Tab Navigation
@@ -134,18 +170,32 @@ async function loadDocs() {
   }
 }
 
+// Presentation slide position — tracked independently (not read back from
+// the highlighted nav item) so rapid clicks/keys never target a stale slide.
+let slideIdx = 0;
+function slideLinks() {
+  return Array.from(document.querySelectorAll('.slides-nav a'));
+}
+function goToSlide(idx) {
+  const links = slideLinks();
+  if (!links.length) return;
+  slideIdx = Math.max(0, Math.min(links.length - 1, idx));
+  links[slideIdx].click();
+}
+
 // Presentation slide nav: smooth-scroll + scroll-spy highlighting
 function setupSlideSpy() {
-  const links = document.querySelectorAll('.slides-nav a');
+  const links = slideLinks();
   if (!links.length) return;
   const map = new Map();
-  links.forEach((a) => {
+  links.forEach((a, i) => {
     const id = a.getAttribute('href').slice(1);
     const el = document.getElementById(id);
     if (!el) return;
-    map.set(el, a);
+    map.set(el, { link: a, index: i });
     a.addEventListener('click', (e) => {
       e.preventDefault();
+      slideIdx = i;
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
@@ -157,13 +207,27 @@ function setupSlideSpy() {
   const obs = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
       if (en.isIntersecting) {
+        const found = map.get(en.target);
+        if (!found) return;
+        slideIdx = found.index;
         links.forEach((a) => a.classList.remove('active'));
-        const link = map.get(en.target);
-        if (link) link.classList.add('active');
+        found.link.classList.add('active');
       }
     });
   }, { rootMargin: '-30% 0px -60% 0px' });
   map.forEach((_, el) => obs.observe(el));
+}
+
+// Presentation: left/right arrow keys move between slides
+function setupSlideKeys() {
+  document.addEventListener('keydown', (e) => {
+    if (currentTab !== 'presentation') return;
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return; // don't hijack typing
+    e.preventDefault();
+    goToSlide(slideIdx + (e.key === 'ArrowRight' ? 1 : -1));
+  });
 }
 
 // Event Listeners
@@ -186,6 +250,18 @@ function setupEventListeners() {
       copyToClipboard(e.target.dataset.copy);
     }
   });
+
+  // Remember manually opened Raw Payload panels (toggle doesn't bubble,
+  // so listen in capture phase)
+  document.addEventListener('toggle', (e) => {
+    const d = e.target;
+    if (d && d.matches && d.matches('.callback-raw')) {
+      const id = d.dataset.logId;
+      if (!id) return;
+      if (d.open) openCallbackRaws.add(id);
+      else openCallbackRaws.delete(id);
+    }
+  }, true);
   
   // Copy all buttons
   document.getElementById('pay-copy-all')?.addEventListener('click', () => copyPayResult());
@@ -218,8 +294,8 @@ function renderApiInfo() {
 
   // Human-readable labels for codes (stakeholder-friendly)
   const METHOD_INFO = {
-    gcash: ['GCash', 'E-wallet payment'],
-    palawanpay: ['PalawanPay', 'Palawan pawnshop wallet'],
+    gcash: ['GCash (discontinued)', 'E-wallet payment'],
+    palawanpay: ['PalawanPay (discontinued)', 'Palawan pawnshop wallet'],
     qrph: ['QRPh Standard', 'National QR-code payment'],
     'qrph-vip': ['QRPh VIP', 'QRPh with higher limits'],
     instapay: ['InstaPay', 'Instant transfer to a bank / wallet']
@@ -277,21 +353,40 @@ function renderBankList(filter) {
 }
 
 // API Helpers
-async function apiRequest(endpoint, data) {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  
-  const result = await res.json();
-  
+function nowMs() {
+  return (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+}
+async function apiRequest(endpoint, data, source) {
+  source = source || 'portal';
+  const t0 = nowMs();
+  const log = (entry) => {
+    if (typeof window.logApiCall === 'function') {
+      try { window.logApiCall(entry); } catch (e) { /* logging must never break calls */ }
+    }
+  };
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch (err) {
+    log({ source, dir: 'out', endpoint, request: data, response: { message: err.message }, httpOk: false, httpStatus: 0, ms: Math.round(nowMs() - t0) });
+    throw err;
+  }
+
+  const result = await res.json().catch(() => ({}));
+  const ms = Math.round(nowMs() - t0);
+
+  log({ source, dir: 'out', endpoint, request: data, response: result, httpOk: res.ok, httpStatus: res.status, ms });
+
   if (!res.ok) {
     const err = new Error(formatApiError(result, res.status));
     err.details = result;
     throw err;
   }
-  
+
   // DigiCash can also return HTTP 200 with an embedded failure
   // (e.g. operation.status === 'fail'), let the caller render it.
   return result;
@@ -435,19 +530,20 @@ async function handleStatusSubmit(e) {
   const btnLoader = submitBtn.querySelector('.btn-loader');
   
   const formData = new FormData(form);
-  const requestId = formData.get('requestId').trim();
-  
-  if (!requestId) {
-    showError('status-error', 'Please enter a Request ID');
+  const requestId = (formData.get('requestId') || '').trim();
+  const operationId = (formData.get('operationId') || '').trim();
+
+  if (!requestId && !operationId) {
+    showError('status-error', 'Please enter an Operation ID or Request ID');
     return;
   }
-  
+
   setLoading(submitBtn, btnText, btnLoader, true);
   hideError('status-error');
   hideResult('status-result');
-  
+
   try {
-    const result = await apiRequest('/proxy/status', { requestId });
+    const result = await apiRequest('/proxy/status', { requestId: requestId || undefined, operationId: operationId || undefined });
     showStatusResult(result);
     showToast('Status retrieved successfully!', 'success');
   } catch (err) {
@@ -475,7 +571,9 @@ function showPayResult(data) {
   document.getElementById('res-operation-id').textContent = data.operation_id || '-';
   document.getElementById('res-status').textContent = status;
   document.getElementById('res-status').className = `result-value status-badge ${status.toLowerCase()}`;
-  document.getElementById('res-signature').textContent = data.signatureValid ? '✅ Valid' : '❌ Invalid';
+  document.getElementById('res-signature').innerHTML = data.signatureValid
+    ? '<svg class="ic ic-ok"><use href="#i-check"/></svg> Valid'
+    : '<svg class="ic ic-bad"><use href="#i-cross"/></svg> Invalid';
   document.getElementById('res-signature').style.color = data.signatureValid ? 'var(--success)' : 'var(--danger)';
   
   // Redirect link
@@ -485,6 +583,25 @@ function showPayResult(data) {
     document.getElementById('pay-redirect-link').style.display = 'inline-flex';
   } else {
     document.getElementById('pay-redirect-link').style.display = 'none';
+  }
+
+  // Inline QR (DigiCash returns the raw EMVCo payload as qr_content)
+  const qrWrap = document.getElementById('pay-qr-wrap');
+  const qrBox = document.getElementById('pay-qr');
+  if (qrBox) qrBox.innerHTML = '';
+  if (data.qr_content && window.qrcode && qrWrap) {
+    try {
+      const qr = window.qrcode(0, 'M');
+      qr.addData(data.qr_content);
+      qr.make();
+      qrBox.innerHTML = qr.createImgTag(4, 8);
+      qrWrap.classList.remove('hidden');
+    } catch (e) {
+      console.error('QR render failed:', e);
+      qrWrap.classList.add('hidden');
+    }
+  } else if (qrWrap) {
+    qrWrap.classList.add('hidden');
   }
   
   // Provider/request error messages (shown when not successful)
@@ -504,7 +621,9 @@ function showPayoutResult(data) {
   document.getElementById('res-po-operation-id').textContent = data.operation_id || '-';
   document.getElementById('res-po-status').textContent = status;
   document.getElementById('res-po-status').className = `result-value status-badge ${status.toLowerCase()}`;
-  document.getElementById('res-po-signature').textContent = data.signatureValid ? '✅ Valid' : '❌ Invalid';
+  document.getElementById('res-po-signature').innerHTML = data.signatureValid
+    ? '<svg class="ic ic-ok"><use href="#i-check"/></svg> Valid'
+    : '<svg class="ic ic-bad"><use href="#i-cross"/></svg> Invalid';
   document.getElementById('res-po-signature').style.color = data.signatureValid ? 'var(--success)' : 'var(--danger)';
   
   renderResultErrors('payout-result', data);
@@ -543,7 +662,9 @@ function showStatusResult(data) {
   document.getElementById('res-st-op-status').className = `result-value status-badge ${(data.operation?.status || '').toLowerCase()}`;
   document.getElementById('res-st-req-status').textContent = data.request?.status || 'unknown';
   document.getElementById('res-st-req-status').className = `result-value status-badge ${(data.request?.status || '').toLowerCase()}`;
-  document.getElementById('res-st-signature').textContent = data.signatureValid ? '✅ Valid' : '❌ Invalid';
+  document.getElementById('res-st-signature').innerHTML = data.signatureValid
+    ? '<svg class="ic ic-ok"><use href="#i-check"/></svg> Valid'
+    : '<svg class="ic ic-bad"><use href="#i-cross"/></svg> Invalid';
   document.getElementById('res-st-signature').style.color = data.signatureValid ? 'var(--success)' : 'var(--danger)';
   document.getElementById('res-st-timestamp').textContent = data.timestamp || '-';
   
@@ -669,6 +790,11 @@ function copyPayoutResult() {
 }
 
 // Callbacks
+// Tracks which Raw Payload panels the user opened, so the 5s poll
+// never collapses them — only you collapse them.
+const openCallbackRaws = new Set();
+let lastCallbacksKey = '';
+
 async function loadCallbackUrl() {
   // Show the callback URL actually sent to DigiCash (from server config),
   // falling back to this portal's own address.
@@ -686,7 +812,16 @@ async function loadCallbacks() {
   try {
     const res = await fetch(`${API_BASE}/callbacks`);
     const data = await res.json();
-    renderCallbacks(data.logs || []);
+    const logs = data.logs || [];
+    // Skip re-render when nothing changed — preserves scroll + open panels
+    const newest = logs[logs.length - 1];
+    const key = `${logs.length}:${newest ? newest.id + newest.timestamp : ''}`;
+    if (key === lastCallbacksKey) return;
+    lastCallbacksKey = key;
+    // Forget panels for entries that no longer exist (e.g. after Clear)
+    const ids = new Set(logs.map((l) => l.id));
+    [...openCallbackRaws].forEach((id) => { if (!ids.has(id)) openCallbackRaws.delete(id); });
+    renderCallbacks(logs);
   } catch (err) {
     console.error('Failed to load callbacks:', err);
   }
@@ -741,12 +876,12 @@ function renderCallbacks(logs) {
         </div>
         <div class="callback-field">
           <span class="callback-field-label">Signature</span>
-          <span class="callback-field-value">${log.signatureValid ? '✅ Valid' : '❌ Invalid'}</span>
+          <span class="callback-field-value">${log.signatureValid ? '<svg class="ic ic-ok"><use href="#i-check"/></svg> Valid' : '<svg class="ic ic-bad"><use href="#i-cross"/></svg> Invalid'}</span>
         </div>
       </div>
-      <details class="callback-raw">
+      <details class="callback-raw" data-log-id="${escapeHtml(log.id || '')}"${openCallbackRaws.has(log.id) ? ' open' : ''}>
         <summary>Raw Payload</summary>
-        <pre>${JSON.stringify(log.payload, null, 2)}</pre>
+        <pre>${escapeHtml(JSON.stringify(log.payload, null, 2))}</pre>
       </details>
     </div>
   `).join('');

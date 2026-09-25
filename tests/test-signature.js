@@ -97,8 +97,8 @@ console.log();
 console.log('📋 Test 6: validateCallback Function');
 const callbackPayload = {
   external_id: '7105563620335199',
-  provider_id: 'STARPAY_PAY',
-  provider_name: 'STARPAY',
+  provider_id: 'TESTPROV_PAY',
+  provider_name: 'TEST_PROVIDER',
   operation_id: 'IOTTEST1749280392147',
   payment_method: 'gcash',
   amount: '15000',

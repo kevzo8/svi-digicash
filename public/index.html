@@ -6,17 +6,49 @@
   <title>SVI DigiCash - Payment Portal</title>
   <link rel="icon" href="/DigiCash.png" type="image/png">
   <link rel="stylesheet" href="/styles.css">
+  <script>(function(){try{var t=localStorage.getItem('svi-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;}catch(e){}})();</script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+      <symbol id="i-in" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
+      <symbol id="i-out" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+      <symbol id="i-cross" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+      <symbol id="i-chev" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+      <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 20v-4M10 20V9M15 20v-9M20 20V5"/></symbol>
+      <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 10v4"/><rect x="4" y="9" width="9" height="6" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+      <symbol id="i-card" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></symbol>
+      <symbol id="i-pen" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></symbol>
+      <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+      <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+      <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+      <symbol id="i-case" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    </defs>
+  </svg>
   <div class="app">
     <!-- Header -->
     <header class="header">
       <div class="header-content">
         <div class="logo">
-          <img src="/DigiCash.png" alt="DigiCash" class="logo-img">
-          <span class="logo-text">SVI DigiCash</span>
+          <img src="/DigiCash_Dark.jpg" alt="DigiCash" class="logo-img">
+          <span class="logo-brand"><span class="logo-text">SVI <em>DigiCash</em></span><span class="logo-tagline">Secure · Verified · Instant</span></span>
         </div>
         <div class="header-actions">
+          <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode"><svg class="ic"><use href="#i-moon"/></svg></button>
           <span class="env-badge prod">Production</span>
         </div>
       </div>
@@ -24,19 +56,153 @@
 
     <!-- Navigation -->
     <nav class="nav">
-      <button class="nav-btn active" data-tab="pay">Pay In</button>
+      <button class="nav-btn active" data-tab="demo">Demo</button>
+      <button class="nav-btn" data-tab="pay">Pay In</button>
       <button class="nav-btn" data-tab="payout">Pay Out</button>
       <button class="nav-btn" data-tab="status">Check Status</button>
       <button class="nav-btn" data-tab="callbacks">Callbacks</button>
       <button class="nav-btn" data-tab="api-info">API Info</button>
       <button class="nav-btn" data-tab="presentation">Presentation</button>
       <button class="nav-btn" data-tab="docs">Docs</button>
+      <button class="nav-btn" data-tab="gaps">Gaps</button>
     </nav>
 
     <!-- Main Content -->
     <main class="main">
+      <!-- Demo Tab : SVI merchant wallet prototype -->
+      <section id="tab-demo" class="tab-content active">
+        <div class="demo-layout demo-3col">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-statusbar"><span id="demo-clock">--:--</span><span><svg class="ic"><use href="#i-signal"/></svg> <svg class="ic"><use href="#i-battery"/></svg></span></div>
+
+              <!-- HOME -->
+              <div class="dscreen" id="d-home">
+                <div class="d-brand">
+                  <img src="/DigiCash_Dark.jpg" alt="DigiCash" class="d-logo">
+                  <div><strong>SVI Wallet</strong><div class="form-hint">Merchant demo · service.svi</div></div>
+                  <span class="pill demo-pill">DEMO</span>
+                </div>
+                <div class="wallet-card">
+                  <div class="form-hint wallet-label">Demo balance</div>
+                  <div class="wallet-balance" id="d-balance">₱0.00</div>
+                  <div class="wallet-merchant" id="d-merchant">service.svi</div>
+                </div>
+                <div class="d-actions">
+                  <button class="d-action-btn" data-go="d-payin"><svg class="ic"><use href="#i-in"/></svg><span>Pay In</span></button>
+                  <button class="d-action-btn" data-go="d-payout"><svg class="ic"><use href="#i-out"/></svg><span>Pay Out</span></button>
+                  <button class="d-action-btn" data-go="d-activity"><svg class="ic"><use href="#i-list"/></svg><span>Activity</span></button>
+                </div>
+                <h4>Recent</h4>
+                <div id="d-recent"></div>
+              </div>
+
+              <!-- PAY IN -->
+              <div class="dscreen hidden" id="d-payin">
+                <div class="d-top"><button class="btn-icon d-back" data-go="d-home"><svg class="ic"><use href="#i-chev"/></svg></button><strong>Pay In · QRPh</strong></div>
+                <form id="d-payin-form" class="d-form">
+                  <label>Amount (PHP)</label>
+                  <input type="number" id="d-amount" step="0.01" min="1" placeholder="100.00" required>
+                  <button type="submit" class="btn btn-primary btn-full" id="d-payin-btn"><span class="btn-text">Generate QR</span><span class="btn-loader hidden"></span></button>
+                </form>
+                <div id="d-payin-result" class="hidden">
+                  <div id="d-qr" class="qr-wrap"></div>
+                  <div class="kv"><span>Operation</span><code id="d-payin-op">-</code></div>
+                  <div class="kv"><span>Status</span><span class="status-badge" id="d-payin-status">-</span></div>
+                  <div class="d-row">
+                    <button class="btn btn-secondary" id="d-check-status">Check status</button>
+                    <button class="btn btn-secondary" id="d-simulate-paid">Simulate paid</button>
+                  </div>
+                </div>
+                <div id="d-payin-error" class="error hidden"></div>
+              </div>
+
+              <!-- PAY OUT -->
+              <div class="dscreen hidden" id="d-payout">
+                <div class="d-top"><button class="btn-icon d-back" data-go="d-home"><svg class="ic"><use href="#i-chev"/></svg></button><strong>Pay Out · InstaPay</strong></div>
+                <form id="d-payout-form" class="d-form">
+                  <label>Amount (PHP)</label>
+                  <input type="number" id="d-po-amount" step="0.01" min="1" placeholder="500.00" required>
+                  <label>Bank / wallet</label>
+                  <select id="d-bank" required><option value="">Select…</option></select>
+                  <label>Account number</label>
+                  <input type="text" id="d-acct" placeholder="09271528945" required>
+                  <label>Account name</label>
+                  <input type="text" id="d-name" placeholder="Juan Dela Cruz" required>
+                  <button type="submit" class="btn btn-primary btn-full" id="d-payout-btn"><span class="btn-text">Send money</span><span class="btn-loader hidden"></span></button>
+                </form>
+                <div id="d-payout-result" class="hidden">
+                  <div class="kv"><span>Operation</span><code id="d-po-op">-</code></div>
+                  <div class="kv"><span>Status</span><span class="status-badge" id="d-po-status">-</span></div>
+                  <div class="kv"><span>Message</span><span class="form-hint" id="d-po-msg">-</span></div>
+                </div>
+                <div id="d-payout-error" class="error hidden"></div>
+              </div>
+
+              <!-- ACTIVITY -->
+              <div class="dscreen hidden" id="d-activity">
+                <div class="d-top"><button class="btn-icon d-back" data-go="d-home"><svg class="ic"><use href="#i-chev"/></svg></button><strong>API Activity</strong></div>
+                <div class="form-hint">Every request + response, newest first. Stored on this device.</div>
+                <div id="d-activity-list"></div>
+              </div>
+
+              <!-- DETAIL -->
+              <div class="dscreen hidden" id="d-detail">
+                <div class="d-top"><button class="btn-icon d-back" data-go="d-activity"><svg class="ic"><use href="#i-chev"/></svg></button><strong id="d-detail-title">Call detail</strong></div>
+                <div id="d-detail-route" class="d-routes"></div>
+                <h4>Request</h4>
+                <pre id="d-detail-req" class="json-viewer"></pre>
+                <h4>Response</h4>
+                <pre id="d-detail-res" class="json-viewer"></pre>
+              </div>
+            </div>
+            <div class="phone-homebar"></div>
+          </div>
+          <aside class="demo-col">
+            <div class="card">
+              <div class="card-header"><div><h3>Live backend</h3><p class="card-subtitle">Every API call, newest first · <span id="d-feed-count">0 calls</span></p></div></div>
+              <div class="demo-feed" id="d-feed">
+                <p class="form-hint">No calls yet — try Pay In on the phone.</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h3>Session</h3></div>
+              <div class="info-body">
+                <p class="form-hint">A mobile prototype of SVI's merchant wallet. Pay-in QR and payouts hit the <strong>live</strong> DigiCash API; everything is logged under the hood.</p>
+                <div class="kv"><span>Session balance</span><code id="d-session-balance">-</code></div>
+                <div class="kv"><span>DigiCash wallet</span><code id="d-wallet-signal">unknown — no payout tested yet</code></div>
+                <div class="kv"><span>Stored calls</span><code id="d-session-calls">-</code></div>
+                <div class="kv"><span>Simulated receipts</span><code id="d-session-tx">-</code></div>
+                <button class="btn btn-secondary btn-full" id="d-reset">Reset demo data</button>
+                <p class="form-hint">Secrets (credentials, secret key) never leave this server — the phone calls <code>/api/proxy/*</code> and the server attaches them. Balances are simulated for demo purposes.</p>
+              </div>
+            </div>
+          </aside>
+          <aside class="demo-col">
+            <div class="card">
+              <div class="card-header"><h3>Selected call</h3></div>
+              <div class="info-body" id="d-selected">
+                <div class="empty-call" id="d-selected-empty">
+                  <svg class="ic"><use href="#i-doc"/></svg>
+                  <p><strong>Nothing selected</strong></p>
+                  <p class="form-hint">Tap any call in Live backend to inspect its request and response here.</p>
+                </div>
+                <div id="d-selected-body" class="hidden">
+                  <div id="d-selected-routes" class="d-routes"></div>
+                  <h4>Request</h4>
+                  <pre id="d-selected-req" class="json-viewer"></pre>
+                  <h4>Response</h4>
+                  <pre id="d-selected-res" class="json-viewer"></pre>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
       <!-- Pay In Tab -->
-      <section id="tab-pay" class="tab-content active">
+      <section id="tab-pay" class="tab-content">
         <div class="workspace">
         <div class="card">
           <div class="card-header">
@@ -48,9 +214,9 @@
             <div class="form-group">
               <label for="pay-method">Payment Method</label>
               <select id="pay-method" name="method" required>
-                <option value="gcash">GCash</option>
-                <option value="palawanpay">PalawanPay</option>
-                <option value="qrph">QR Ph (Standard)</option>
+                <option value="gcash" disabled>GCash (discontinued)</option>
+                <option value="palawanpay" disabled>PalawanPay (discontinued)</option>
+                <option value="qrph" selected>QR Ph (Standard)</option>
                 <option value="qrph-vip">QR Ph VIP</option>
               </select>
             </div>
@@ -87,7 +253,7 @@
         </div>
         <aside class="side-panel">
           <div class="side-placeholder" id="pay-side-placeholder">
-            <div class="side-placeholder-icon">📄</div>
+            <div class="side-placeholder-icon"><svg class="ic"><use href="#i-doc"/></svg></div>
             <p><strong>No response yet</strong></p>
             <p class="form-hint">Submit the form and the API response will appear here.</p>
           </div>
@@ -95,7 +261,7 @@
           <div id="pay-result" class="result hidden">
             <div class="result-header">
               <h3>Payment Created Successfully</h3>
-              <button class="btn-icon" id="pay-copy-all" title="Copy all details">📋</button>
+              <button class="btn-icon" id="pay-copy-all" title="Copy all details"><svg class="ic"><use href="#i-copy"/></svg></button>
             </div>
             <div class="result-grid">
               <div class="result-item">
@@ -118,8 +284,12 @@
               </div>
             </div>
             <div class="result-action">
+              <div id="pay-qr-wrap" class="qr-wrap hidden">
+                <div id="pay-qr"></div>
+                <p class="form-hint">Scan with any bank or e-wallet app to pay</p>
+              </div>
               <a id="pay-redirect-link" href="#" target="_blank" class="btn btn-primary btn-full">
-                🔗 Redirect to Payment Page
+                <svg class="ic"><use href="#i-link"/></svg> Redirect to Payment Page
               </a>
               <p class="form-hint">Click the button above or share the redirect URL with your customer</p>
             </div>
@@ -214,7 +384,7 @@
         </div>
         <aside class="side-panel">
           <div class="side-placeholder" id="payout-side-placeholder">
-            <div class="side-placeholder-icon">📄</div>
+            <div class="side-placeholder-icon"><svg class="ic"><use href="#i-doc"/></svg></div>
             <p><strong>No response yet</strong></p>
             <p class="form-hint">Submit the form and the API response will appear here.</p>
           </div>
@@ -222,7 +392,7 @@
           <div id="payout-result" class="result hidden">
             <div class="result-header">
               <h3>Payout Created Successfully</h3>
-              <button class="btn-icon" id="payout-copy-all" title="Copy all details">📋</button>
+              <button class="btn-icon" id="payout-copy-all" title="Copy all details"><svg class="ic"><use href="#i-copy"/></svg></button>
             </div>
             <div class="result-grid">
               <div class="result-item">
@@ -268,9 +438,14 @@
 
           <form id="status-form" class="form">
             <div class="form-group">
-              <label for="status-request-id">Request ID <span class="required">*</span></label>
-              <input type="text" id="status-request-id" name="requestId" placeholder="01JX4PFRAY0NEM43EJ9NVQVFZ2" required>
-              <span class="form-hint">Request ID returned from Pay/Payout API</span>
+              <label for="status-operation-id">Operation ID</label>
+              <input type="text" id="status-operation-id" name="operationId" placeholder="PAY1790302177187SM6PHO">
+              <span class="form-hint">Your transaction ID from the Pay/Payout response — accepted by the live API</span>
+            </div>
+            <div class="form-group">
+              <label for="status-request-id">Request ID (optional)</label>
+              <input type="text" id="status-request-id" name="requestId" placeholder="6151342">
+              <span class="form-hint">DigiCash's ID, if you have it — sent alongside when provided</span>
             </div>
             <button type="submit" class="btn btn-primary btn-full" id="status-submit">
               <span class="btn-text">Check Status</span>
@@ -280,7 +455,7 @@
         </div>
         <aside class="side-panel">
           <div class="side-placeholder" id="status-side-placeholder">
-            <div class="side-placeholder-icon">📄</div>
+            <div class="side-placeholder-icon"><svg class="ic"><use href="#i-doc"/></svg></div>
             <p><strong>No response yet</strong></p>
             <p class="form-hint">Submit the form and the API response will appear here.</p>
           </div>
@@ -353,7 +528,7 @@
       <section id="tab-api-info" class="tab-content">
         <div class="info-grid">
           <div class="card info-card">
-            <div class="card-header"><h3>🌍 Environment</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-globe"/></svg> Environment</h3></div>
             <div class="info-body">
               <div class="kv"><span>Base URL</span><code id="info-base-url">Loading…</code></div>
               <div class="kv"><span>Service ID</span><code id="info-service-id">Loading…</code></div>
@@ -364,7 +539,7 @@
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>🔗 DigiCash API</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-link"/></svg> DigiCash API</h3></div>
             <div class="info-body">
               <h4>Endpoints (production)</h4>
               <div class="kv"><span><code>POST /pay</code></span><span class="form-hint">Collect a payment (e-wallet or QR)</span></div>
@@ -384,7 +559,7 @@
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>💳 Payment Methods</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-card"/></svg> Payment Methods</h3></div>
             <div class="info-body">
               <h4>Pay in (collect money)</h4>
               <div class="badge-row" id="info-pay-methods"></div>
@@ -394,7 +569,7 @@
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>🏦 Banks & Wallets <span id="info-bank-count"></span></h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-bank"/></svg> Banks & Wallets <span id="info-bank-count"></span></h3></div>
             <div class="info-body">
               <input type="search" id="info-bank-search" class="search-input" placeholder="Search banks… (e.g. BDO, GCash, Maya)">
               <div class="bank-list" id="info-bank-list"></div>
@@ -402,7 +577,7 @@
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>✍️ Signature Recipe</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-pen"/></svg> Signature Recipe</h3></div>
             <div class="info-body">
               <ol class="steps">
                 <li>Concatenate payload <strong>values</strong> in key order (skip <code>signature</code>)</li>
@@ -414,7 +589,7 @@
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>📊 Transaction Statuses</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-chart"/></svg> Transaction Statuses</h3></div>
             <div class="info-body">
               <h4>Payment status (what you see in results)</h4>
               <div class="badge-row" id="info-pay-statuses"></div>
@@ -424,14 +599,14 @@
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>📚 Links</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-book"/></svg> Links</h3></div>
             <div class="info-body link-list">
-              <a id="info-docs-link" href="#" target="_blank" rel="noopener">📖 DigiCash API docs (Postman)</a>
+              <a id="info-docs-link" href="#" target="_blank" rel="noopener"><svg class="ic"><use href="#i-book"/></svg> DigiCash API docs (Postman)</a>
             </div>
           </div>
 
           <div class="card info-card">
-            <div class="card-header"><h3>🖥️ Portal API (click to visit)</h3></div>
+            <div class="card-header"><h3><svg class="ic"><use href="#i-monitor"/></svg> Portal API (click to visit)</h3></div>
             <div class="info-body link-list">
               <a href="/api/health" target="_blank" rel="noopener"><code>GET /api/health</code> — server status</a>
               <a href="/api/config" target="_blank" rel="noopener"><code>GET /api/config</code> — config & credentials check</a>
@@ -457,15 +632,18 @@
               <li><a href="#slide-8"><span class="num">8</span> Errors</a></li>
               <li><a href="#slide-9"><span class="num">9</span> Our POC</a></li>
               <li><a href="#slide-10"><span class="num">10</span> Evidence & next steps</a></li>
+              <li><a href="#slide-11"><span class="num">11</span> DigiCash FAQ</a></li>
+              <li><a href="#slide-end"><span class="num">★</span> Thank you</a></li>
             </ol>
+            <p class="slides-hint">← → keys move between slides</p>
           </aside>
           <div class="slides">
             <div class="card slide" id="slide-1">
               <h2>SVI DigiCash — DigiCash API Integration</h2>
               <p class="slide-sub">Ticket CPS-471 · Payment gateway POC · Production: api.fastpayph.com · Merchant: service.svi</p>
               <div class="slide-grid-2">
-                <div class="mini-card"><strong>🎯 Goal</strong><p class="form-hint">Collect payments (e-wallets, QR) and disburse payouts (InstaPay) through DigiCash.</p></div>
-                <div class="mini-card"><strong>✅ Status</strong><p class="form-hint">Integration proven end-to-end up to DigiCash. Blocked on their provider config + wallet funding.</p></div>
+                <div class="mini-card"><strong><svg class="ic"><use href="#i-target"/></svg> Goal</strong><p class="form-hint">Collect payments (e-wallets, QR) and disburse payouts (InstaPay) through DigiCash.</p></div>
+                <div class="mini-card"><strong><svg class="ic ic-ok"><use href="#i-check"/></svg> Status</strong><p class="form-hint">Integration proven end-to-end up to DigiCash. Blocked on their provider config + wallet funding.</p></div>
               </div>
             </div>
 
@@ -474,9 +652,15 @@
               <p class="slide-sub">DigiCash is the middleman between us, the provider, and the banks.</p>
               <pre class="mermaid">flowchart LR
     C[Customer] &lt;-->|pays / receives| D[DigiCash API]
-    D &lt;-->|forwards to| P[Provider Starpay]
+    D &lt;-->|forwards to| P[Upstream provider]
     P &lt;-->|settles with| B[Banks and wallets]
     S[SVI merchant service.svi] &lt;-->|signed requests + callbacks| D</pre>
+              <div class="slide-grid-2" style="margin-top:16px">
+                <div class="mini-card"><strong><svg class="ic"><use href="#i-case"/></svg> DigiCash (gateway)</strong><p class="form-hint">The company and API we integrate with. Checks our signature, routes the money, notifies us of results. Think: the bank branch.</p></div>
+                <div class="mini-card"><strong><svg class="ic"><use href="#i-send"/></svg> Upstream provider</strong><p class="form-hint">The company behind DigiCash that physically moves money. We never talk to it directly. Think: the armored van.</p></div>
+                <div class="mini-card"><strong><svg class="ic"><use href="#i-bank"/></svg> Bank / wallet</strong><p class="form-hint">Where money starts or ends (GCash, Maya, BDO…). Holds the funds — different from the provider that carries the transfer.</p></div>
+                <div class="mini-card"><strong><svg class="ic"><use href="#i-user"/></svg> Merchant (us)</strong><p class="form-hint">Our DigiCash account (service.svi): credentials plus a prefunded wallet that payouts draw from.</p></div>
+              </div>
             </div>
 
             <div class="card slide" id="slide-3">
@@ -488,32 +672,75 @@
                 <div class="mini-card"><strong>POST /status</strong><p class="form-hint">Ask what happened to any transaction.</p></div>
                 <div class="mini-card"><strong>POST → callback</strong><p class="form-hint">DigiCash pushes PAID / FAIL / EXPIRED to us.</p></div>
               </div>
+              <h4 style="margin-top:16px">Pay vs payout — don't mix them up</h4>
+              <table class="api-table">
+                <tr><th></th><th>Pay (money in)</th><th>Payout (money out)</th></tr>
+                <tr><td>Direction</td><td>Customer → us</td><td>Us → customer</td></tr>
+                <tr><td>Who acts</td><td>Customer pays on a DigiCash page</td><td>We push to their bank / wallet</td></tr>
+                <tr><td>Methods</td><td>GCash, PalawanPay, QRPh, QRPh VIP</td><td>InstaPay (92 banks & wallets)</td></tr>
+                <tr><td>Money comes from</td><td>Customer's wallet</td><td>Our prefunded DigiCash wallet</td></tr>
+                <tr><td>Typical use</td><td>Checkout, top-up, collection</td><td>Disbursement, salary, refund</td></tr>
+              </table>
             </div>
 
             <div class="card slide" id="slide-4">
               <h2>Security & signing</h2>
-              <p class="slide-sub">Every request is HMAC-SHA256 signed. The secret never leaves our server.</p>
-              <ol class="steps">
+              <p class="slide-sub">Every request carries three credentials plus a signature. Secrets never leave our server.</p>
+              <table class="api-table">
+                <tr><th>Credential</th><th>Value</th><th>Meaning</th></tr>
+                <tr><td><code>service_id</code></td><td><code>service.svi</code></td><td>Our merchant account</td></tr>
+                <tr><td><code>passwork</code></td><td><code>••••••</code></td><td>Merchant password (server only)</td></tr>
+                <tr><td><code>secret_key</code></td><td><code>••••••</code> (30 chars)</td><td>Signing key (server only, never committed)</td></tr>
+              </table>
+              <ol class="steps" style="margin-top:12px">
                 <li>Concatenate field <strong>values</strong> in body order (skip <code>signature</code>)</li>
                 <li>Empty value becomes <code>-</code></li>
                 <li>HMAC-SHA256 with the merchant <code>secret_key</code></li>
                 <li>Attach the hex digest as <code>signature</code></li>
               </ol>
+              <h4 style="margin-top:12px">Example — a ₱1.00 GCash payment signs this exact string</h4>
+              <pre class="code-block">service.svi + [passwork] + 100 + PHP + &lt;operation_id&gt; + &lt;payment_id&gt; + gcash + &lt;callback_url&gt; + &lt;return_url&gt;</pre>
+              <h4 style="margin-top:12px">Field order per endpoint (proven by live probe)</h4>
+              <table class="api-table">
+                <tr><th>Endpoint</th><th>Signing order</th></tr>
+                <tr><td><code>Pay</code></td><td><code>service_id, passwork, amount, currency, operation_id, payment_id, by_method, callback_url, return_url</code></td></tr>
+                <tr><td><code>Payout</code></td><td><code>same as Pay, then customer{account_bank_id, account_number, account_name, email, phone_number}</code></td></tr>
+                <tr><td><code>Status</code></td><td><code>passwork, service_id, request_id</code> (passwork first)</td></tr>
+              </table>
             </div>
 
             <div class="card slide" id="slide-5">
               <h2>Pay flow</h2>
-              <p class="slide-sub">Methods: GCash · PalawanPay · QRPh · QRPh VIP. Amounts in centavos as strings (₱100 → "10000").</p>
-              <pre class="mermaid">flowchart TD
+              <p class="slide-sub">Methods: QRPh · QRPh VIP (GCash & PalawanPay discontinued by DigiCash). Amounts in centavos as strings (₱100 → "10000").</p>
+              <pre class="mermaid">flowchart LR
     A[Portal sends SIGNED request] --> B[POST /pay]
     B --> C{Gateway signature OK?}
     C -- No --> E[HTTP 400 code 2041]
-    C -- Yes --> F[Forward to Starpay]
+    C -- Yes --> F[Forward to provider]
     F --> G{Provider accepts?}
     G -- No --> H[operation FAIL + message]
     G -- Yes --> I[redirect_url for customer]
     I --> J[Customer pays]
     J --> K[Callback PAID / FAIL / EXPIRED]</pre>
+              <h4 style="margin-top:16px">Step by step</h4>
+              <pre class="mermaid">sequenceDiagram
+    participant U as Portal UI
+    participant S as Portal server
+    participant D as DigiCash
+    participant P as Provider
+    participant C as Customer
+    U->>S: Pay ₱100 via QRPh
+    S->>S: Sign request (Section 4)
+    S->>D: POST /pay
+    D->>D: Verify signature
+    D->>P: Forward payment
+    P-->>D: Accept
+    D-->>S: 200 + redirect_url + request_id
+    S-->>U: Show link + Request ID
+    U->>C: Customer opens link &amp; pays
+    P->>D: Money moved
+    D->>S: POST callback: PAID
+    S->>S: Verify + log + display</pre>
             </div>
 
             <div class="card slide" id="slide-6">
@@ -521,33 +748,67 @@
               <p class="slide-sub">InstaPay disbursements from our prefunded DigiCash wallet to 92 banks & wallets.</p>
               <div class="slide-grid-2">
                 <div class="mini-card"><strong>Top destinations</strong><p class="form-hint">GCash · Maya · BDO · BPI · Metrobank · PNB · LANDBANK · UnionBank · GoTyme · Tonik · ShopeePay · GrabPay · Coins.ph</p></div>
-                <div class="mini-card"><strong>⚠️ Wallet funding</strong><p class="form-hint">Empty wallet returns code 7015. DigiCash must top up merchant service.svi before payouts can complete.</p></div>
+                <div class="mini-card"><strong><svg class="ic ic-bad"><use href="#i-alert"/></svg> Wallet funding</strong><p class="form-hint">Empty wallet returns code 7015. DigiCash must top up merchant service.svi before payouts can complete.</p></div>
               </div>
+              <h4 style="margin-top:16px">Step by step</h4>
+              <pre class="mermaid">sequenceDiagram
+    participant U as Portal UI
+    participant S as Portal server
+    participant D as DigiCash
+    participant P as Provider
+    participant B as Destination bank
+    U->>S: Payout ₱500 → Maya 0927…
+    S->>S: Sign request (Section 4)
+    S->>D: POST /payout
+    D->>D: Verify signature + check wallet balance
+    D->>P: Forward disbursement
+    P->>B: InstaPay transfer
+    B-->>P: Confirm
+    P-->>D: Done
+    D-->>S: 200 + external_id
+    D->>S: POST callback: PAID</pre>
             </div>
 
             <div class="card slide" id="slide-7">
               <h2>Statuses</h2>
               <p class="slide-sub">Responses use lowercase, callbacks use UPPERCASE. PAID / FAIL / EXPIRED are final.</p>
+              <div class="slide-grid-2" style="align-items:start">
+                <div>
               <pre class="mermaid">stateDiagram-v2
-    [*] --> initiated
-    initiated --> processing
-    processing --> paid
-    processing --> fail
-    processing --> expired
+    [*] --> awaiting_redirect : pay created
+    [*] --> initiated : pay/payout created
+    awaiting_redirect --> processing : customer pays
+    initiated --> processing : provider works
+    processing --> paid : money moved
+    processing --> fail : rejected
+    processing --> expired : window lapsed
     paid --> [*]
     fail --> [*]
     expired --> [*]</pre>
+                </div>
+                <div>
+                  <table class="api-table">
+                    <tr><th>Status</th><th>Where seen</th><th>Meaning</th></tr>
+                    <tr><td><code>awaiting_redirect</code></td><td>Pay response</td><td>Waiting for the customer to open the payment page</td></tr>
+                    <tr><td><code>initiated</code></td><td>Pay/Payout response</td><td>Transaction created, waiting</td></tr>
+                    <tr><td><code>processing</code> / <code>PROCESSING</code></td><td>Response / callback</td><td>Being processed</td></tr>
+                    <tr><td><code>paid</code> / <code>PAID</code></td><td>Response / callback</td><td><svg class="ic ic-ok"><use href="#i-check"/></svg> Money moved — final</td></tr>
+                    <tr><td><code>fail</code> / <code>FAIL</code></td><td>Response / callback</td><td><svg class="ic ic-bad"><use href="#i-cross"/></svg> Rejected — final, read the provider message</td></tr>
+                    <tr><td><code>expired</code> / <code>EXPIRED</code></td><td>Response / callback</td><td>⏰ Payment window lapsed — final</td></tr>
+                  </table>
+                </div>
+              </div>
             </div>
 
             <div class="card slide" id="slide-8">
               <h2>Errors — which layer failed?</h2>
               <p class="slide-sub">Gateway errors are ours to fix. Provider errors are DigiCash's.</p>
               <table class="api-table">
-                <tr><th>Code</th><th>Meaning</th><th>Action</th></tr>
-                <tr><td><code>2041</code></td><td>Our signature rejected</td><td>Fix signing</td></tr>
-                <tr><td><code>2043</code></td><td>Unknown merchant</td><td>Check service_id / environment</td></tr>
-                <tr><td><code>3011</code></td><td>Provider failed</td><td>Read provider message; escalate to DigiCash</td></tr>
-                <tr><td><code>7015</code></td><td>Wallet empty</td><td>Fund merchant wallet</td></tr>
+                <tr><th>Code</th><th>Meaning</th><th>Owner</th><th>Status</th><th>Action</th></tr>
+                <tr><td><code>2041</code></td><td>Our signature rejected — gateway HMAC check failed</td><td>Ours</td><td><span class="st-ok">Fixed</span> — 7-variant live probe (2026-09-07): only the Postman field order passes; every other order is correctly rejected</td><td>None — recheck only if signing code or secret changes</td></tr>
+                <tr><td><code>2043</code></td><td>Unknown merchant — service_id not registered in that environment</td><td>Ours</td><td><span class="st-ok">Resolved</span> — seen only on UAT; production accepts service.svi since the move to api.fastpayph.com</td><td>None — keep base URL on production</td></tr>
+                <tr><td><code>3011</code></td><td>Provider failed</td><td>DigiCash</td><td><span class="st-bad">Open</span></td><td>Escalate; awaiting their fix</td></tr>
+                <tr><td><code>7015</code></td><td>Wallet empty</td><td>DigiCash</td><td><span class="st-bad">Open</span></td><td>Awaiting wallet funding</td></tr>
               </table>
             </div>
 
@@ -555,10 +816,28 @@
               <h2>Our POC</h2>
               <p class="slide-sub">Portal tabs: Pay In · Pay Out · Check Status · Callbacks · API Info. Secret stays server-side.</p>
               <pre class="mermaid">flowchart TD
-    UI[Browser forms] --> PXY[Portal server signs + proxies]
-    PXY --> DC[DigiCash pay payout status]
-    DC -. callback .-> CB[Webhook verify + log]
-    CB --> UI4[Callbacks tab]</pre>
+    subgraph Browser [Browser public/]
+        UI1[Pay In form]
+        UI2[Pay Out form]
+        UI3[Check Status]
+        UI4[Callbacks log]
+        UI5[API Info]
+    end
+    subgraph Server [Portal server src/ - EC2 18.246.254.97:3000]
+        PXY[Proxy routes - index.js]
+        CLI[DigiCash client - digicash-client.js]
+        SIG[HMAC signing - signature.js]
+        CB[Webhook + logs - callback.js]
+    end
+    subgraph DC [DigiCash https://api.fastpayph.com]
+        PAY[POST /pay]
+        PO[POST /payout]
+        ST[POST /status]
+    end
+    UI1 & UI2 & UI3 --> PXY --> CLI --> SIG
+    CLI --> PAY & PO & ST
+    DC -. callback .-> CB
+    CB --> UI4</pre>
             </div>
 
             <div class="card slide" id="slide-10">
@@ -566,15 +845,43 @@
               <p class="slide-sub">Proven: our signing passes DigiCash's gateway (7-variant live probe).</p>
               <table class="api-table">
                 <tr><th>Test</th><th>Result</th></tr>
-                <tr><td>Pay (GCash, QRPh)</td><td>Gateway ✅ → provider ❌ Invalid signature (DigiCash to fix)</td></tr>
-                <tr><td>Payout (InstaPay)</td><td>Gateway ✅ → 7015 wallet empty (needs funding)</td></tr>
-                <tr><td>Callbacks</td><td>Simulated PAID/FAIL/EXPIRED ✅ · live blocked by firewall</td></tr>
+                <tr><td>Pay (GCash, QRPh)</td><td>Gateway <svg class="ic ic-ok"><use href="#i-check"/></svg> → provider <svg class="ic ic-bad"><use href="#i-cross"/></svg> Invalid signature (DigiCash to fix)</td></tr>
+                <tr><td>Payout (InstaPay)</td><td>Gateway <svg class="ic ic-ok"><use href="#i-check"/></svg> → 7015 wallet empty (needs funding)</td></tr>
+                <tr><td>Callbacks</td><td>Simulated PAID/FAIL/EXPIRED <svg class="ic ic-ok"><use href="#i-check"/></svg> · live blocked by firewall</td></tr>
               </table>
               <ol class="steps" style="margin-top:12px">
-                <li><strong>DigiCash:</strong> fix Starpay provider signing + fund wallet</li>
+                <li><strong>DigiCash:</strong> fix upstream provider signing + fund wallet</li>
                 <li><strong>AWS admin:</strong> open port 3000 + Elastic IP</li>
                 <li><strong>Us:</strong> full end-to-end + production hardening</li>
               </ol>
+            </div>
+            <div class="card slide" id="slide-11">
+              <h2>DigiCash FAQ — official answers</h2>
+              <p class="slide-sub">Straight from DigiCash. Full verbatim Q&A lives in the Docs tab.</p>
+              <table class="api-table">
+                <tr><th>Question</th><th>Answer</th></tr>
+                <tr><td>Per-dealer wallets?</td><td>Yes — each dealer gets its own <code>service_id</code> (sub-merchants)</td></tr>
+                <tr><td>Bulk reports / settlement?</td><td>Yes — portal downloads (deposits + withdrawals); sample coming</td></tr>
+                <tr><td>Duplicate <code>operation_id</code>?</td><td>Impossible — dynamic QR, unique IDs</td></tr>
+                <tr><td>Production access?</td><td>Granted after passing UAT</td></tr>
+                <tr><td>Refunds / voids?</td><td>Possible, handled on our end; settlement T+0 / T+1</td></tr>
+                <tr><td>Cards? Bank transfer?</td><td>CC + QRPh only; QRPh up to ₱300–500k; GCash/PalawanPay cut</td></tr>
+                <tr><td>Throughput?</td><td>3,000 txn/sec stated capacity</td></tr>
+                <tr><td>Minor units?</td><td>Confirmed — last 2 digits are decimals</td></tr>
+                <tr><td>Fees?</td><td>Convenience fee; payor-pays or MDR-deducted (configurable)</td></tr>
+              </table>
+            </div>
+            <div class="card slide slide-end" id="slide-end">
+              <div class="slide-end-logos">
+                <img src="/DigiCash_Dark.jpg" alt="DigiCash" class="slide-end-logo">
+                <img src="/DigiCash_SVI.jpg" alt="Software Ventures SVI Community" class="slide-end-logo">
+              </div>
+              <h2>Ready when DigiCash is</h2>
+              <p class="slide-tagline">Secure · Verified · Instant</p>
+              <p class="slide-sub">Our integration is proven end to end on the SVI side — signed requests pass DigiCash's gateway exactly to spec.</p>
+              <p class="slide-sub">The moment DigiCash clears the provider signing and funds the merchant wallet, this portal is ready to go live.</p>
+              <hr class="slide-divider">
+              <p class="slide-credit">CPS-471: SVI DigiCash API Integration - PoC by Kevin G. Vega</p>
             </div>
           </div>
         </div>
@@ -594,17 +901,49 @@
           </div>
         </div>
       </section>
+      <!-- Gaps Tab -->
+      <section id="tab-gaps" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Gap analysis — what a full portal still needs</h2>
+              <p class="card-subtitle">For each missing piece: why the business needs it, where it stands, and what we propose. Green = have it · Amber = partial/unclear · Red = missing.</p>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="api-table gap-table">
+              <tr><th>Capability</th><th>Why it matters</th><th>Status</th><th>Proposed solution</th></tr>
+              <tr><td>Wallet balance query</td><td>Admin can't see funds before disbursing — today we only learn the wallet is empty <em>after</em> a payout fails in front of a customer.</td><td><span class="st-bad">Gap</span></td><td>Ask DigiCash for a balance endpoint. Meanwhile the demo shows the last-known verdict from real payout attempts.</td></tr>
+              <tr><td>Transaction list & search</td><td>Finance can't reconcile the day and support can't look up "where is my payment?" without hand-downloading files.</td><td><span class="st-bad">Gap</span></td><td>Ask for a list/search API. Meanwhile: their portal downloads + per-transaction status checks.</td></tr>
+              <tr><td>Settlement statements via API</td><td>Accounting needs daily totals flowing into the books, not someone exporting CSVs by hand.</td><td><span class="st-warn">Partial</span></td><td>Automate ingestion once exposed; manual download meanwhile (sample report requested).</td></tr>
+              <tr><td>Refunds & voids</td><td>Wrong amounts and cancelled payments currently have no way back to the customer.</td><td><span class="st-warn">Unclear</span></td><td>Get the written process from DigiCash (settlement is T+0/T+1, which decides the design), then build our refund flow.</td></tr>
+              <tr><td>Callback retry policy</td><td>If our server is down for 5 minutes during a payout confirmation, do we lose that notification forever?</td><td><span class="st-warn">Unclear</span></td><td>Design for at-least-once delivery with idempotency keys on our side; get their retry counts in writing.</td></tr>
+              <tr><td>Callback signature spec</td><td>Without the exact spec we cannot prove a notification really came from DigiCash — a fraud hole.</td><td><span class="st-warn">Unclear</span></td><td>We reverse-engineered and verified it live; need their written sign-off.</td></tr>
+              <tr><td>Fee schedule</td><td>We can't show customers exact fees or compute margins automatically — verbal deals drift.</td><td><span class="st-warn">Partial</span></td><td>Get the written fee table; confirm payor-pays vs MDR-deducted, then encode it.</td></tr>
+              <tr><td>Duplicate protection</td><td>A customer must never be double-charged when they tap pay twice.</td><td><span class="st-ok">Have it</span></td><td>None needed — dynamic QR + unique IDs make duplicates impossible.</td></tr>
+              <tr><td>Per-dealer wallets</td><td>Dealers (e.g. Ford vs Toyota) need separated funds and reporting.</td><td><span class="st-ok">Have it</span></td><td>None needed — one <code>service_id</code> per dealer.</td></tr>
+              <tr><td>Throughput headroom</td><td>Peak-day campaigns must not throttle checkouts.</td><td><span class="st-ok">Have it</span></td><td>None needed — 3,000 txn/sec stated capacity.</td></tr>
+              <tr><td>Amount format proof</td><td>Misreading ₱150.00 as ₱15,000 would be catastrophic.</td><td><span class="st-ok">Have it</span></td><td>None needed — minor units confirmed in writing.</td></tr>
+              <tr><td>Card & bank rails</td><td>Customers without e-wallets still need a way to pay.</td><td><span class="st-warn">Partial</span></td><td>CC + QRPh covered; QRPh limits raised to ₱300–500k soften the gap.</td></tr>
+              <tr><td>Safe testing environment</td><td>Developers need to test without touching real money.</td><td><span class="st-warn">Partial</span></td><td>This POC simulates locally; push for proper UAT access on the path to production.</td></tr>
+              <tr><td>Production access</td><td>No launch without it.</td><td><span class="st-warn">Pending</span></td><td>Track as a launch gate — granted after passing UAT.</td></tr>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-      <p>SVI DigiCash Payment Portal &copy; 2026 | CPS-471</p>
+      <p>SVI DigiCash Payment Portal © 2026 | CPS-471: SVI DigiCash API Integration - PoC by Kevin G. Vega</p>
     </footer>
   </div>
 
   <script src="/app.js"></script>
+  <script src="/demo.js"></script>
   <script src="/vendor/mermaid.min.js"></script>
   <script src="/vendor/marked.min.js"></script>
+  <script src="/vendor/qrcode.min.js"></script>
   <script>if (window.mermaid) { mermaid.initialize({ startOnLoad: false, theme: 'neutral' }); }</script>
 </body>
 </html>

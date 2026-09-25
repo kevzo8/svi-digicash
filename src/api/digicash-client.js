@@ -259,20 +259,29 @@ class DigiCashClient {
   // ==================== STATUS API ====================
 
   /**
-   * Check transaction status
-   * @param {string} requestId - Request ID from Pay/Payout response
+   * Check transaction status.
+   * Live API requires `operation_id` (returns 5020 without it);
+   * `request_id` is sent as well when provided (per official docs).
+   * @param {string|Object} ids - requestId string (legacy) or {requestId, operationId}
    * @returns {Promise<Object>} - Status response
    */
-  async checkStatus(requestId) {
+  async checkStatus(ids) {
+    const { requestId, operationId } = typeof ids === 'string' ? { requestId: ids } : (ids || {});
+    if (!requestId && !operationId) {
+      throw new Error('Provide requestId or operationId');
+    }
+    // Field order mirrors the official Postman body (passwork first),
+    // appending operation_id after request_id.
     const payload = {
       passwork: this.passwork,
-      service_id: this.serviceId,
-      request_id: requestId
+      service_id: this.serviceId
     };
+    if (requestId) payload.request_id = requestId;
+    if (operationId) payload.operation_id = operationId;
 
     const signedPayload = signRequest(payload, this.secretKey);
 
-    console.log('📤 Checking Status for Request ID:', requestId);
+    console.log('📤 Checking Status:', { requestId, operationId });
 
     const response = await this.client.post(config.digicash.endpoints.status, signedPayload);
     
